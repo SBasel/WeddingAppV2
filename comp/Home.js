@@ -1,9 +1,17 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { useLoadFonts } from './fonts/useLoadFonts';
 
 
 export function Home({ navigation }) {
-  
+  const fontsLoaded = useLoadFonts();
+  console.log(useLoadFonts)
+
+  if (!fontsLoaded) {
+    console.log(fontsLoaded)
+    return null;
+  }
+
     return (
         <View style={styles.titleMobile}>
             <Text style={styles.headerText}>Kathariana</Text>
