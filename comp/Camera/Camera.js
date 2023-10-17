@@ -1,57 +1,50 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { View, Image, Button, TouchableOpacity, StyleSheet } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; // assuming you're using Expo to handle icons
+import React from 'react';
+import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons'; 
+import ImagePicker from 'react-native-image-picker';
 
 export function Camera({ onCapture = () => {}, onClose }) {
-    const webcamRef = useRef(null);
-    const fileInputRef = useRef(null);
-    const [usingWebcam, setUsingWebcam] = useState(false);
-    const [capturedImage, setCapturedImage] = useState(null);
 
-    const capture = useCallback(() => {
-        // You will need to handle webcam capture differently for web
-    }, [webcamRef, onCapture]);
+    const openCamera = () => {
+        const options = {
+            mediaType: 'photo',
+        };
 
-    const handleNativeCapture = (event) => {
-        // Handling file input might require a different approach for web
+        ImagePicker.launchCamera(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                Alert.alert('Error', response.error);
+            } else {
+                onCapture(response.uri);
+            }
+        });
     };
 
-    const closeEditor = () => {
-        setCapturedImage(null);
+    const openPhotoLibrary = () => {
+        const options = {};
+
+        ImagePicker.launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                Alert.alert('Error', response.error);
+            } else {
+                onCapture(response.uri);
+            }
+        });
     };
 
     return (
         <View style={styles.cameraContainer}>
-            {capturedImage ? (
-                <View style={styles.capturedContainer}>
-                    <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
-                    <Button title="Schließen" onPress={closeEditor} />
-                </View>
-            ) : (
-                <View style={styles.buttonsContainer}>
-                    <TouchableOpacity style={styles.iconButton} onPress={onClose}>
-                        <FontAwesome name="times" size={32} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.iconButton} onPress={() => {
-                        // handle file input
-                    }}>
-                        <FontAwesome name="upload" size={32} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.iconButton} onPress={() => {
-                        setUsingWebcam(true);
-                    }}>
-                        <FontAwesome name="camera" size={32} />
-                    </TouchableOpacity>
-                    {usingWebcam && (
-                        <View>
-                            {/* Webcam component */}
-                            <TouchableOpacity style={styles.iconButton} onPress={capture}>
-                                <FontAwesome name="camera" size={32} />
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                </View>
-            )}
+            <View style={styles.buttonsContainer}>
+                <TouchableOpacity style={styles.iconButton} onPress={openPhotoLibrary}>
+                    <FontAwesome name="upload" size={32} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconButton} onPress={openCamera}>
+                    <FontAwesome name="camera" size={32} />
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }

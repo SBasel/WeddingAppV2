@@ -5,10 +5,8 @@ import { useLoadFonts } from './fonts/useLoadFonts';
 
 export function Home({ navigation }) {
   const fontsLoaded = useLoadFonts();
-  console.log(useLoadFonts)
 
   if (!fontsLoaded) {
-    console.log(fontsLoaded)
     return null;
   }
 
