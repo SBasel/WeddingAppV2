@@ -1,0 +1,54 @@
+import React from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
+
+
+export function Home({ navigation }) {
+  
+    return (
+        <View style={styles.titleMobile}>
+            <Text style={styles.headerText}>Kathariana</Text>
+            <Text style={styles.headerText}>& Patrick</Text>
+            <View style={styles.imageContainer}>
+                <Image source={require('../assets/placholder.jpeg')} style={styles.mainImage} />
+                <Image source={require('../assets/framegold.png')} style={styles.frameImage} />
+            </View>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    titleMobile: {
+        width: "100%",
+        height: "98%",
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    headerText: {
+        fontFamily: 'Great Vibes',
+        fontSize: 32,
+        textAlign: 'center',
+    },
+    imageContainer: {
+        width: 300,
+        height: 400,
+    },
+    mainImage: {
+      position: 'absolute',
+        top: 45,
+        left: 53,
+        width: '70%',
+        height: '80%',
+        resizeMode: 'cover',
+    },
+    frameImage: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+        borderRadius: 20,
+        zIndex: 1,
+    },
+});

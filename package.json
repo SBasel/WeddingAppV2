@@ -1,0 +1,36 @@
+{
+  "name": "weddingapp2-0",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo/webpack-config": "^19.0.0",
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/react-native-fontawesome": "^0.3.0",
+    "@react-native-firebase/app": "^18.5.0",
+    "@react-native-firebase/auth": "^18.5.0",
+    "@react-native-google-signin/google-signin": "^10.0.1",
+    "@react-navigation/native": "^6.1.8",
+    "@react-navigation/stack": "^6.3.18",
+    "events": "^3.3.0",
+    "expo": "~49.0.13",
+    "expo-status-bar": "~1.7.1",
+    "firebase": "^10.5.0",
+    "react": "18.2.0",
+    "react-native": "0.72.6",
+    "react-native-global-props": "^1.1.5",
+    "react-native-screens": "~3.25.0",
+    "react-native-svg": "13.14.0",
+    "react-native-web": "^0.19.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.2"
+  },
+  "private": true
+}
