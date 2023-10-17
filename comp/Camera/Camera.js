@@ -1,39 +1,59 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, TouchableOpacity, StyleSheet, Alert, Modal, Image, Button } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
-import ImagePicker from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 export function Camera({ onCapture = () => {}, onClose }) {
+    const [isImageModalVisible, setImageModalVisible] = useState(false);
+    const [selectedImageUri, setSelectedImageUri] = useState(null);
 
-    const openCamera = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*;capture=camera';
-    input.onchange = (event) => {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            onCapture(e.target.result);
-        };
-        reader.readAsDataURL(file);
-    };
-    input.click();
+    const showImageModal = (imageUri) => {
+        setSelectedImageUri(imageUri);
+        setImageModalVisible(true);
+    }
+
+    const hideImageModal = () => {
+        setImageModalVisible(false);
+    }
+
+    const openCamera = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+        Alert.alert('Permission to access camera is required!');
+        return;
+    }
+
+    const pickerResult = await ImagePicker.launchCameraAsync();
+    if (pickerResult.canceled) {
+        return;
+    }
+
+    const imageUri = pickerResult.assets[0].uri;
+
+    console.log("Image loaded!");
+    console.log(imageUri)
+    onCapture(imageUri);
+    showImageModal(imageUri);
 };
 
+const openPhotoLibrary = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+        Alert.alert('Permission to access media library is required!');
+        return;
+    }
 
-    const openPhotoLibrary = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (event) => {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            onCapture(e.target.result);
-        };
-        reader.readAsDataURL(file);
-    };
-    input.click();
+    const pickerResult = await ImagePicker.launchImageLibraryAsync();
+    if (pickerResult.canceled) {
+        return;
+    }
+
+    const imageUri = pickerResult.assets[0].uri;
+
+    console.log("Image loaded!");
+    console.log(imageUri)
+    onCapture(imageUri);
+    showImageModal(imageUri);
 };
 
 
@@ -47,6 +67,29 @@ export function Camera({ onCapture = () => {}, onClose }) {
                     <FontAwesome name="camera" size={32} />
                 </TouchableOpacity>
             </View>
+
+            {/* Modal to show selected image */}
+            {selectedImageUri && (
+                <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={isImageModalVisible}
+                    onRequestClose={hideImageModal}
+                >
+                    <View style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                }}>
+                        {console.log("Rendering modal with image:", selectedImageUri)}
+                        <Image 
+                        source={{ uri: selectedImageUri }}
+                        style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+                    />
+                    <Button title="Schließen" onPress={hideImageModal} />
+                </View>
+            </Modal>
+            )}
         </View>
     );
 }
