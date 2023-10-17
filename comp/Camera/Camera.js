@@ -6,34 +6,36 @@ import ImagePicker from 'react-native-image-picker';
 export function Camera({ onCapture = () => {}, onClose }) {
 
     const openCamera = () => {
-        const options = {
-            mediaType: 'photo',
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*;capture=camera';
+    input.onchange = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            onCapture(e.target.result);
         };
-
-        ImagePicker.launchCamera(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                Alert.alert('Error', response.error);
-            } else {
-                onCapture(response.uri);
-            }
-        });
+        reader.readAsDataURL(file);
     };
+    input.click();
+};
+
 
     const openPhotoLibrary = () => {
-        const options = {};
-
-        ImagePicker.launchImageLibrary(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                Alert.alert('Error', response.error);
-            } else {
-                onCapture(response.uri);
-            }
-        });
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            onCapture(e.target.result);
+        };
+        reader.readAsDataURL(file);
     };
+    input.click();
+};
+
 
     return (
         <View style={styles.cameraContainer}>

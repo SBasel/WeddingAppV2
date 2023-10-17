@@ -19,15 +19,16 @@ function CustomFooter({}) {
       <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Camera')}>
         <FontAwesomeIcon icon={faCamera} size={32} />
       </TouchableOpacity>
+      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Help')}>
+        <FontAwesomeIcon icon={faQuestion} size={32} />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Gallery')}>
         <FontAwesomeIcon icon={faImage} size={32} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Option')}>
         <FontAwesomeIcon icon={faBars} size={32} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Help')}>
-        <FontAwesomeIcon icon={faQuestion} size={32} />
-      </TouchableOpacity>
+      
     </View>
   );
 }
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     backgroundColor: 'rgba(239, 239, 240, 0.884)',
     padding: 10,
-    position: 'absolute',
+    position: 'fixed',
     bottom: 0,
     left: 0,
     right: 0,

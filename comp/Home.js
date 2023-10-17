@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontFamily: 'Great Vibes',
-        fontSize: 32,
+        fontSize: 46,
         textAlign: 'center',
     },
     imageContainer: {
@@ -41,10 +41,10 @@ const styles = StyleSheet.create({
     },
     mainImage: {
       position: 'absolute',
-        top: 45,
+        top: 35,
         left: 53,
         width: '70%',
-        height: '80%',
+        height: '85%',
         resizeMode: 'cover',
     },
     frameImage: {
