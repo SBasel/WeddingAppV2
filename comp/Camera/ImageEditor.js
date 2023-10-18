@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
 import ViewShot from "react-native-view-shot";
@@ -15,6 +15,9 @@ export function ImageEditor({ route, navigation }) {
     const [offsetY, setOffsetY] = useState(0);
     const viewShotRef = useRef(null);
     const [capturedImage, setCapturedImage] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isModalVisible, setModalVisible] = useState(false);
+
 
 
     const panResponder = PanResponder.create({
@@ -40,26 +43,33 @@ export function ImageEditor({ route, navigation }) {
     } 
 
     const onDiskSave = async () => {
-    
-    await captureImageWithText();
+    setIsLoading(true);
 
-    if (!capturedImage) return; // Nur speichern, wenn ein erfasstes Bild vorhanden ist
+    
+
+    if (!capturedImage) {
+        setIsLoading(false);
+        return;
+    }
 
     try {
-        await uploadImage(capturedImage); // Speichern Sie das erfasste Bild und nicht das Originalbild
+        await uploadImage(capturedImage);
         console.log("Erfolgreich gespeichert!");
-        onClose();
+        setModalVisible(true);
     } catch (error) {
         console.log("Fehler beim Speichern des Bildes.");
     }
+
+    setIsLoading(false);
 }
 
 
 const captureImageWithText = async () => {
     try {
-        const dataUri = await viewShotRef.current.capture();
+        const dataUri = await viewShotRef.current.capture({ format: 'base64' });
         setCapturedImage(dataUri);
         console.log("Bild erfolgreich erfasst!");
+        onDiskSave();
     } catch (error) {
         console.log("Fehler beim Erfassen des Bildes: ", error);
     }
@@ -103,7 +113,7 @@ const captureImageWithText = async () => {
                         <TouchableOpacity onPress={() => setIsEditing(true)}>
                             <FontAwesome5 name="pen" size={24} color="blue" />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={onDiskSave} style={{ marginTop: 10 }}>
+                        <TouchableOpacity onPress={captureImageWithText } style={{ marginTop: 10 }}>
                             <FontAwesome5 name="save" size={24} color="blue" />
                         </TouchableOpacity>
                     </>
@@ -116,6 +126,35 @@ const captureImageWithText = async () => {
             {capturedImage && (
             <Image source={{ uri: capturedImage }} style={{ width: 100, height: 100, position: 'absolute', bottom: 10, right: 10, zIndex: -999}} />
         )}
+        {isLoading && (
+            <View style={{...styles.centered, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)'}}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        )}
+
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => {
+                setModalVisible(!isModalVisible);
+            }}
+        >
+            <View style={styles.centered}>
+                <View style={styles.modalView}>
+                    <Text>Bild erfolgreich gespeichert!</Text>
+                    <TouchableOpacity
+                        style={{ marginTop: 10 }}
+                        onPress={() => {
+                            setModalVisible(!isModalVisible);
+                            navigation.navigate('Camera'); // Navigiere zurück zur Camera
+                        }}
+                    >
+                        <Text>OK</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
         </View>
         </KeyboardAvoidingView>
     );
@@ -156,6 +195,19 @@ const styles = StyleSheet.create({
         top: 20, 
         right: 20,
     },
+    centered: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        elevation: 5
+    }
 });
 
 
