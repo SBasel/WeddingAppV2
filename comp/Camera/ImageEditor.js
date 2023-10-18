@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder } from 'react-native';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
 import ViewShot from "react-native-view-shot";
@@ -67,6 +67,10 @@ const captureImageWithText = async () => {
 
 
     return (
+        <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
         <View style={styles.editorContainer}>
             <ViewShot ref={viewShotRef} options={{ format: "jpg", quality: 1.0, result: "data-uri" }}>
             <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
@@ -107,9 +111,10 @@ const captureImageWithText = async () => {
                 <FontAwesome5 name="times" size={24} color="black" />
             </TouchableOpacity>
             {capturedImage && (
-            <Image source={{ uri: capturedImage }} style={{ width: 100, height: 100, position: 'absolute', bottom: 10, right: 10 }} />
+            <Image source={{ uri: capturedImage }} style={{ width: 100, height: 100, position: 'absolute', bottom: 10, right: 10, zIndex: -999}} />
         )}
         </View>
+        </KeyboardAvoidingView>
     );
 }
 
