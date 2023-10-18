@@ -42,38 +42,38 @@ export function ImageEditor({ route, navigation }) {
         setIsEditing(false);
     } 
 
-    const onDiskSave = async () => {
-    setIsLoading(true);
+    const onDiskSave = async (imageData) => {
+        setIsLoading(true);
 
-    
+        if (!imageData) {
+            setIsLoading(false);
+            return;
+        }
 
-    if (!capturedImage) {
+        try {
+            await uploadImage(imageData);
+            console.log("Erfolgreich gespeichert!");
+            setModalVisible(true);
+        } catch (error) {
+            console.log("Fehler beim Speichern des Bildes.");
+        }
+
         setIsLoading(false);
-        return;
     }
 
-    try {
-        await uploadImage(capturedImage);
-        console.log("Erfolgreich gespeichert!");
-        setModalVisible(true);
-    } catch (error) {
-        console.log("Fehler beim Speichern des Bildes.");
-    }
-
-    setIsLoading(false);
-}
 
 
-const captureImageWithText = async () => {
-    try {
-        const dataUri = await viewShotRef.current.capture({ format: 'base64' });
-        setCapturedImage(dataUri);
-        console.log("Bild erfolgreich erfasst!");
-        onDiskSave();
-    } catch (error) {
-        console.log("Fehler beim Erfassen des Bildes: ", error);
-    }
-};
+    const captureImageWithText = async () => {
+        try {
+            const dataUri = await viewShotRef.current.capture({ format: 'base64' });
+            console.log("Bild erfolgreich erfasst!");
+            console.log("Test", dataUri)
+            onDiskSave(dataUri);
+        } catch (error) {
+            console.log("Fehler beim Erfassen des Bildes: ", error);
+        }
+    };
+
 
 
 
@@ -85,7 +85,7 @@ const captureImageWithText = async () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
         <View style={styles.editorContainer}>
-            <ViewShot ref={viewShotRef} options={{ format: "jpg", quality: 1.0, result: "data-uri" }}>
+            <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
             <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
             
             {isEditing && (
