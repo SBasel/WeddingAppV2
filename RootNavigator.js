@@ -6,6 +6,7 @@ import { faHouse, faCamera, faImage, faBars, faQuestion } from '@fortawesome/fre
 import { useNavigation } from '@react-navigation/native';
 import { Home } from './comp/Home'
 import { Camera } from './comp/Camera/Camera';
+import { ImageEditor } from './comp/Camera/ImageEditor';
 
 const Stack = createStackNavigator();
 
@@ -44,6 +45,7 @@ export function RootNavigator() {
 >
         <Stack.Screen name="Home" component={Home} />
          <Stack.Screen name="Camera" component={Camera} />
+         <Stack.Screen name="ImageEditor" component={ImageEditor} />
       </Stack.Navigator>
       <CustomFooter />
     </>

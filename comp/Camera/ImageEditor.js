@@ -1,39 +1,93 @@
 import React, { useState } from 'react';
-import { View, Modal, Image, Button } from 'react-native';
-import { Camera } from './Camera';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons'; 
 
-export function ImageHandler() {
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [isModalVisible, setModalVisible] = useState(false);
+export function ImageEditor({ route, navigation }) {
+    const { imageUri } = route.params;
+    const [isEditing, setIsEditing] = useState(false);
+    const [text, setText] = useState('');
+    const [fontSize, setFontSize] = useState(20);
 
-    const onImageCaptured = (imageData) => {
-        setSelectedImage(imageData);
-        setModalVisible(true); // Öffnen Sie das Modal, wenn ein Bild ausgewählt wurde
-    };
+    const onClose = () => {
+        navigation.goBack();
+    }
 
-    const closeModal = () => {
-        setModalVisible(false);
+    const onSave = () => {
+        setIsEditing(false);
     }
 
     return (
-        <View style={{ flex: 1 }}>
-            <Camera onCapture={onImageCaptured} />
+        <View style={styles.editorContainer}>
+            <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
             
-            {selectedImage && (
-                <Modal
-                    animationType="slide"
-                    transparent={false}
-                    visible={isModalVisible}
-                    onRequestClose={closeModal}
-                >
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Image source={{ uri: selectedImage }} style={{ width: 300, height: 300 }} />
-                        <Button title="Schließen" onPress={closeModal} />
-                    </View>
-                </Modal>
+            {isEditing && (
+                <TextInput
+                    style={{...styles.textInput, fontSize: fontSize}}
+                    value={text}
+                    onChangeText={setText}
+                    placeholder="Füge Text hinzu"
+                />
             )}
+            
+            {!isEditing && (
+                <Text style={{...styles.overlayText, fontSize: fontSize}}>{text}</Text>
+            )}
+            
+            <View style={styles.buttonContainer}>
+                {isEditing ? (
+                    <TouchableOpacity onPress={onSave}>
+                        <FontAwesome5 name="check" size={24} color="green" />
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity onPress={() => setIsEditing(true)}>
+                        <FontAwesome5 name="pen" size={24} color="blue" />
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <FontAwesome5 name="times" size={24} color="black" />
+            </TouchableOpacity>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    editorContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    textInput: {
+    position: 'absolute',
+    color: 'black',
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 4,
+    zIndex: 5, 
+    },
+    overlayText: {
+        position: 'absolute',
+        color: 'black',
+        zIndex: 5, 
+    },
+    buttonContainer: {
+    position: 'absolute',
+    right: 10,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 20, 
+        right: 20, 
+    },
+});
+
+
+
+
 
 
