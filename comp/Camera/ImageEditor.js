@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons'; 
+import React, { useState, useRef } from 'react';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export function ImageEditor({ route, navigation }) {
     const { imageUri } = route.params;
     const [isEditing, setIsEditing] = useState(false);
     const [text, setText] = useState('');
     const [fontSize, setFontSize] = useState(20);
+    const [textPosition, setTextPosition] = useState({ x: 0, y: 0 });
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderMove: (event, gestureState) => {
+                setTextPosition({
+                    x: textPosition.x + gestureState.dx,
+                    y: textPosition.y + gestureState.dy
+                });
+            },
+            onPanResponderRelease: () => {
+                // Optional: Hier können Sie zusätzlichen Code hinzufügen, um die Endposition zu speichern.
+            }
+        })
+    ).current;
 
     const onClose = () => {
         navigation.goBack();
@@ -22,7 +38,7 @@ export function ImageEditor({ route, navigation }) {
             
             {isEditing && (
                 <TextInput
-                    style={{...styles.textInput, fontSize: fontSize}}
+                    style={{...styles.textInput, fontSize: fontSize, top: textPosition.y, left: textPosition.x}}
                     value={text}
                     onChangeText={setText}
                     placeholder="Füge Text hinzu"
@@ -30,7 +46,12 @@ export function ImageEditor({ route, navigation }) {
             )}
             
             {!isEditing && (
-                <Text style={{...styles.overlayText, fontSize: fontSize}}>{text}</Text>
+                <Text
+                    style={{...styles.overlayText, fontSize: fontSize, top: textPosition.y, left: textPosition.x}}
+                    {...panResponder.panHandlers}
+                >
+                    {text}
+                </Text>
             )}
             
             <View style={styles.buttonContainer}>
@@ -59,12 +80,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     textInput: {
-    position: 'absolute',
-    color: 'black',
-    borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 4,
-    zIndex: 5, 
+        position: 'absolute',
+        color: 'black',
+        borderColor: 'black',
+        borderWidth: 1,
+        borderRadius: 4,
+        zIndex: 5, 
     },
     overlayText: {
         position: 'absolute',
@@ -72,17 +93,17 @@ const styles = StyleSheet.create({
         zIndex: 5, 
     },
     buttonContainer: {
-    position: 'absolute',
-    right: 10,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
+        position: 'absolute',
+        right: 10,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 10,
     },
     closeButton: {
         position: 'absolute',
         top: 20, 
-        right: 20, 
+        right: 20,
     },
 });
 
