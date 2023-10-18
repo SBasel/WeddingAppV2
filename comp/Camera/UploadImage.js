@@ -6,7 +6,7 @@ export const uploadImage = async (uri) => {
     };
 
     try {
-        const response = await fetch('https://www.Sbdci.de/kpw/upload.php', {
+        const response = await fetch('https://www.sbdci.de/kpw/upload.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -38,9 +38,9 @@ export function ImageEditor({ route, navigation }) {
     const onDiskSave = async () => {
     try {
         await uploadImage(imageUri); // Nehmen Sie an, dass `imageUri` der Pfad zum Bild ist.
-        alert("Erfolgreich gespeichert!");
+        console.log("Erfolgreich gespeichert!");
     } catch (error) {
-        alert("Fehler beim Speichern des Bildes.");
+        console.log("Fehler beim Speichern des Bildes.");
     }
 }
 
