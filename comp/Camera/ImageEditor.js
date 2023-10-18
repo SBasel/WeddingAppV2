@@ -75,7 +75,7 @@ export function ImageEditor({ route, navigation }) {
                             <FontAwesome5 name="pen" size={24} color="blue" />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={onDiskSave} style={{ marginTop: 10 }}>
-                            <FontAwesome5 name="save" size={24} color="black" />
+                            <FontAwesome5 name="save" size={24} color="blue" />
                         </TouchableOpacity>
                     </>
                 )}
