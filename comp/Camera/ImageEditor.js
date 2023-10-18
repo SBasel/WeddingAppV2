@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
+import ViewShot from "react-native-view-shot";
+
 
 export function ImageEditor({ route, navigation }) {
     const { imageUri } = route.params;
@@ -11,6 +13,9 @@ export function ImageEditor({ route, navigation }) {
     const [textPosition, setTextPosition] = useState({ x: 50, y: 50 });
     const [offsetX, setOffsetX] = useState(0);
     const [offsetY, setOffsetY] = useState(0);
+    const viewShotRef = useRef(null);
+    const [capturedImage, setCapturedImage] = useState(null);
+
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -32,12 +37,14 @@ export function ImageEditor({ route, navigation }) {
 
     const onSave = () => {
         setIsEditing(false);
-        // Weitere Aktionen zum Speichern können hier eingefügt werden.
+        captureImageWithText()
     }
 
     const onDiskSave = async () => {
+    if(!capturedImage) return; // Nur speichern, wenn ein erfasstes Bild vorhanden ist
+
     try {
-        await uploadImage(imageUri); // Nehmen Sie an, dass `imageUri` der Pfad zum Bild ist.
+        await uploadImage(capturedImage); // Speichern Sie das erfasste Bild und nicht das Originalbild
         console.log("Erfolgreich gespeichert!");
     } catch (error) {
         console.log("Fehler beim Speichern des Bildes.");
@@ -45,8 +52,23 @@ export function ImageEditor({ route, navigation }) {
 }
 
 
+const captureImageWithText = async () => {
+    try {
+        const dataUri = await viewShotRef.current.capture();
+        setCapturedImage(dataUri);
+        console.log("Bild erfolgreich erfasst!");
+    } catch (error) {
+        console.log("Fehler beim Erfassen des Bildes: ", error);
+    }
+};
+
+
+
+
+
     return (
         <View style={styles.editorContainer}>
+            <ViewShot ref={viewShotRef} options={{ format: "jpg", quality: 1.0, result: "data-uri" }}>
             <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
             
             {isEditing && (
@@ -63,7 +85,7 @@ export function ImageEditor({ route, navigation }) {
             {!isEditing && (
                 <Text {...panResponder.panHandlers} style={{...styles.overlayText, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}>{text}</Text>
             )}
-            
+            </ViewShot>
             <View style={styles.buttonContainer}>
                 {isEditing ? (
                     <TouchableOpacity onPress={onSave}>
@@ -84,6 +106,9 @@ export function ImageEditor({ route, navigation }) {
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                 <FontAwesome5 name="times" size={24} color="black" />
             </TouchableOpacity>
+            {capturedImage && (
+            <Image source={{ uri: capturedImage }} style={{ width: 100, height: 100, position: 'absolute', bottom: 10, right: 10 }} />
+        )}
         </View>
     );
 }
