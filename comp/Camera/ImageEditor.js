@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, Keyboard } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
 import ViewShot from "react-native-view-shot";
@@ -17,9 +17,24 @@ export function ImageEditor({ route, navigation }) {
     const [capturedImage, setCapturedImage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
 
 
 
+    useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+        'keyboardDidHide',
+        handleKeyboardDidHide
+    );
+
+    return () => {
+        keyboardDidHideListener.remove();
+    };
+    }, []);
+
+    const handleKeyboardDidHide = () => {
+        setRefreshKey((prevKey) => prevKey + 1); // Erhöhen Sie den Wert, um eine Neu-Renderung zu erzwingen
+    };
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onPanResponderGrant: (evt, gestureState) => {
@@ -84,7 +99,7 @@ export function ImageEditor({ route, navigation }) {
         style={{ flex: 1 }} 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-        <View style={styles.editorContainer}>
+        <View style={styles.editorContainer } key={refreshKey}>
             <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
             <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
             
