@@ -7,7 +7,7 @@ export function ImageEditor({ route, navigation }) {
     const [isEditing, setIsEditing] = useState(false);
     const [text, setText] = useState('');
     const [fontSize, setFontSize] = useState(20);
-    const [textPosition, setTextPosition] = useState({ x: 0, y: 0 });
+    const [textPosition, setTextPosition] = useState({ x: 50, y: 50 });
 
     const panResponder = useRef(
         PanResponder.create({
