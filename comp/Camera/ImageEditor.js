@@ -92,7 +92,6 @@ export function ImageEditor({ route, navigation }) {
             
             {isEditing && (
                 <TextInput
-                    {...panResponder.panHandlers}
                     style={{...styles.textInput, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}
                     value={text}
                     onChangeText={setText}
