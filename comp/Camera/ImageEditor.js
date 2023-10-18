@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, Keyboard } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
 import ViewShot from "react-native-view-shot";
@@ -17,24 +17,11 @@ export function ImageEditor({ route, navigation }) {
     const [capturedImage, setCapturedImage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
-    const [refreshKey, setRefreshKey] = useState(0);
+    const [isTextModalVisible, setTextModalVisible] = useState(false);
 
 
 
-    useEffect(() => {
-    const keyboardDidHideListener = Keyboard.addListener(
-        'keyboardDidHide',
-        handleKeyboardDidHide
-    );
 
-    return () => {
-        keyboardDidHideListener.remove();
-    };
-    }, []);
-
-    const handleKeyboardDidHide = () => {
-        setRefreshKey((prevKey) => prevKey + 1); // Erhöhen Sie den Wert, um eine Neu-Renderung zu erzwingen
-    };
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onPanResponderGrant: (evt, gestureState) => {
@@ -99,7 +86,7 @@ export function ImageEditor({ route, navigation }) {
         style={{ flex: 1 }} 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-        <View style={styles.editorContainer } key={refreshKey}>
+        <View style={styles.editorContainer}>
             <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
             <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
             
@@ -125,7 +112,7 @@ export function ImageEditor({ route, navigation }) {
                     </TouchableOpacity>
                 ) : (
                     <>
-                        <TouchableOpacity onPress={() => setIsEditing(true)}>
+                        <TouchableOpacity onPress={() => setTextModalVisible(true)}>
                             <FontAwesome5 name="pen" size={24} color="blue" />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={captureImageWithText } style={{ marginTop: 10 }}>
@@ -146,6 +133,34 @@ export function ImageEditor({ route, navigation }) {
                 <ActivityIndicator size="large" color="#0000ff" />
             </View>
         )}
+        <Modal
+    animationType="slide"
+    transparent={true}
+    visible={isTextModalVisible}
+    onRequestClose={() => {
+        setTextModalVisible(!isTextModalVisible);
+    }}
+>
+    <View style={styles.inputText}>
+        <View style={styles.modalInputText}>
+            <TextInput 
+                style={{...styles.textInput, fontSize: fontSize}}
+                value={text}
+                onChangeText={setText}
+                placeholder="Füge Text hinzu"
+                multiline={true}
+            />
+            <TouchableOpacity
+                style={{ marginTop: 80 }}
+                onPress={() => {
+                    setTextModalVisible(false);
+                }}
+            >
+                <Text>Bestätigen</Text>
+            </TouchableOpacity>
+        </View>
+    </View>
+</Modal>
 
         <Modal
             animationType="slide"
@@ -222,7 +237,23 @@ const styles = StyleSheet.create({
         padding: 35,
         alignItems: "center",
         elevation: 5
-    }
+    },
+    inputText: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: 'rgba(0,0,0,0.8)',  // Semi-transparenter Hintergrund
+    },
+    modalInputText: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
 });
 
 
