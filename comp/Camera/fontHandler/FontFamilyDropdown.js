@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Dimensions, StyleSheet } from 'react-native';
-import axios from 'axios';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useLoadFonts, fontMap } from '../../fonts/useLoadFonts.js'
 
