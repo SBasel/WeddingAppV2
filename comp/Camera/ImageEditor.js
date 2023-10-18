@@ -37,11 +37,13 @@ export function ImageEditor({ route, navigation }) {
 
     const onSave = () => {
         setIsEditing(false);
-    }
+    } 
 
     const onDiskSave = async () => {
-        captureImageWithText()
-    if(!capturedImage) return; // Nur speichern, wenn ein erfasstes Bild vorhanden ist
+    
+    await captureImageWithText();
+
+    if (!capturedImage) return; // Nur speichern, wenn ein erfasstes Bild vorhanden ist
 
     try {
         await uploadImage(capturedImage); // Speichern Sie das erfasste Bild und nicht das Originalbild
