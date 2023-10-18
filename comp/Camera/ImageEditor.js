@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons'; 
+import { FontAwesome5 } from '@expo/vector-icons';
+import { uploadImage } from './UploadImage.js';
 
 export function ImageEditor({ route, navigation }) {
     const { imageUri } = route.params;
@@ -31,7 +32,18 @@ export function ImageEditor({ route, navigation }) {
 
     const onSave = () => {
         setIsEditing(false);
+        // Weitere Aktionen zum Speichern können hier eingefügt werden.
     }
+
+    const onDiskSave = async () => {
+    try {
+        await uploadImage(imageUri); // Nehmen Sie an, dass `imageUri` der Pfad zum Bild ist.
+        alert("Erfolgreich gespeichert!");
+    } catch (error) {
+        alert("Fehler beim Speichern des Bildes.");
+    }
+}
+
 
     return (
         <View style={styles.editorContainer}>
@@ -58,9 +70,14 @@ export function ImageEditor({ route, navigation }) {
                         <FontAwesome5 name="check" size={24} color="green" />
                     </TouchableOpacity>
                 ) : (
-                    <TouchableOpacity onPress={() => setIsEditing(true)}>
-                        <FontAwesome5 name="pen" size={24} color="blue" />
-                    </TouchableOpacity>
+                    <>
+                        <TouchableOpacity onPress={() => setIsEditing(true)}>
+                            <FontAwesome5 name="pen" size={24} color="blue" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={onDiskSave} style={{ marginTop: 10 }}>
+                            <FontAwesome5 name="save" size={24} color="black" />
+                        </TouchableOpacity>
+                    </>
                 )}
             </View>
 
