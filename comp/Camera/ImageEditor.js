@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder } from 'react-native';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 export function ImageEditor({ route, navigation }) {
@@ -33,43 +33,48 @@ export function ImageEditor({ route, navigation }) {
     }
 
     return (
-        <View style={styles.editorContainer}>
-            <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
-            
-            {isEditing && (
-                <TextInput
-                    style={{...styles.textInput, fontSize: fontSize, top: textPosition.y, left: textPosition.x}}
-                    value={text}
-                    onChangeText={setText}
-                    placeholder="Füge Text hinzu"
-                />
-            )}
-            
-            {!isEditing && (
-                <Text
-                    style={{...styles.overlayText, fontSize: fontSize, top: textPosition.y, left: textPosition.x}}
-                    {...panResponder.panHandlers}
-                >
-                    {text}
-                </Text>
-            )}
-            
-            <View style={styles.buttonContainer}>
-                {isEditing ? (
-                    <TouchableOpacity onPress={onSave}>
-                        <FontAwesome5 name="check" size={24} color="green" />
-                    </TouchableOpacity>
-                ) : (
-                    <TouchableOpacity onPress={() => setIsEditing(true)}>
-                        <FontAwesome5 name="pen" size={24} color="blue" />
-                    </TouchableOpacity>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <View style={styles.editorContainer}>
+                <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
+                
+                {isEditing && (
+                    <TextInput
+                        style={{...styles.textInput, fontSize: fontSize, top: textPosition.y, left: textPosition.x}}
+                        value={text}
+                        onChangeText={setText}
+                        placeholder="Füge Text hinzu"
+                    />
                 )}
-            </View>
+                
+                {!isEditing && (
+                    <Text
+                        style={{...styles.overlayText, fontSize: fontSize, top: textPosition.y, left: textPosition.x}}
+                        {...panResponder.panHandlers}
+                    >
+                        {text}
+                    </Text>
+                )}
+                
+                <View style={styles.buttonContainer}>
+                    {isEditing ? (
+                        <TouchableOpacity onPress={onSave}>
+                            <FontAwesome5 name="check" size={24} color="green" />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={() => setIsEditing(true)}>
+                            <FontAwesome5 name="pen" size={24} color="blue" />
+                        </TouchableOpacity>
+                    )}
+                </View>
 
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <FontAwesome5 name="times" size={24} color="black" />
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                    <FontAwesome5 name="times" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 
