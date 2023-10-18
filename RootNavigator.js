@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Home } from './comp/Home'
 import { Camera } from './comp/Camera/Camera';
 import { ImageEditor } from './comp/Camera/ImageEditor';
+import { Gallery } from './comp/Gallery/Gallery';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,7 @@ export function RootNavigator() {
         <Stack.Screen name="Home" component={Home} />
          <Stack.Screen name="Camera" component={Camera} />
          <Stack.Screen name="ImageEditor" component={ImageEditor} />
+         <Stack.Screen name="Gallery" component={Gallery} />
       </Stack.Navigator>
       <CustomFooter />
     </>

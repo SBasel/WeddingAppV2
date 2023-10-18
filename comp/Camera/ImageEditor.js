@@ -1,8 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator } from 'react-native';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, Slider, Picker } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
 import ViewShot from "react-native-view-shot";
+import { FontColorDropdown } from './fontHandler/FontColorDropdown.js';
+import { FontFamilyDropdown } from './fontHandler/FontFamilyDropdown.js';
+import { FontSizeDropdown } from './fontHandler/FontSizeDropdown.js';
 
 
 export function ImageEditor({ route, navigation }) {
@@ -18,7 +21,8 @@ export function ImageEditor({ route, navigation }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
     const [isTextModalVisible, setTextModalVisible] = useState(false);
-
+    const [textColor, setTextColor] = useState('black'); 
+    const [fontFamily, setFontFamily] = useState('Arial'); 
 
 
 
@@ -101,7 +105,7 @@ export function ImageEditor({ route, navigation }) {
             )}
             
             {!isEditing && (
-                <Text {...panResponder.panHandlers} style={{...styles.overlayText, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}>{text}</Text>
+                <Text {...panResponder.panHandlers} style={{...styles.overlayText, fontSize: fontSize, color: textColor, fontFamily: fontFamily, left: textPosition.x, top: textPosition.y}}>{text}</Text>
             )}
             </ViewShot>
             <View style={styles.buttonContainer}>
@@ -111,12 +115,16 @@ export function ImageEditor({ route, navigation }) {
                     </TouchableOpacity>
                 ) : (
                     <>
-                        <TouchableOpacity onPress={() => setTextModalVisible(true)}>
-                            <FontAwesome5 name="pen" size={24} color="blue" />
+                    <View style={styles.editcon}>
+                        <TouchableOpacity onPress={() => setTextModalVisible(true)} style={styles.editb} >
+                            <FontAwesome5 name="pen" size={24} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={captureImageWithText } style={{ marginTop: 10 }}>
-                            <FontAwesome5 name="save" size={24} color="blue" />
+                        </View>  
+                    <View style={styles.editcon}>    
+                        <TouchableOpacity onPress={captureImageWithText } style={styles.editb}>
+                            <FontAwesome5 name="save" size={24}   />
                         </TouchableOpacity>
+                        </View>
                     </>
                 )}
             </View>
@@ -133,33 +141,66 @@ export function ImageEditor({ route, navigation }) {
             </View>
         )}
         <Modal
-    animationType="slide"
-    transparent={true}
-    visible={isTextModalVisible}
-    onRequestClose={() => {
-        setTextModalVisible(!isTextModalVisible);
-    }}
->
-    <View style={styles.inputText}>
-        <View style={styles.modalInputText}>
-            <TextInput 
-                style={{...styles.textInput, fontSize: fontSize}}
-                value={text}
-                onChangeText={setText}
-                placeholder="Füge Text hinzu"
-                multiline={true}
-            />
-            <TouchableOpacity
-                style={{ marginTop: 80 }}
-                onPress={() => {
-                    setTextModalVisible(false);
-                }}
-            >
-                <Text>Bestätigen</Text>
-            </TouchableOpacity>
-        </View>
-    </View>
-</Modal>
+            animationType="slide"
+            transparent={true}
+            visible={isTextModalVisible}
+            onRequestClose={() => {
+                setTextModalVisible(!isTextModalVisible);
+            }}
+        >
+            <View style={styles.inputText}>
+                <View style={styles.modalInputText}>
+                    {/* Dropdown-Container */}
+                    <View style={styles.dropdownContainer}>
+                        {/* Schriftgröße ändern */}
+                        <FontSizeDropdown style={styles.dropdownItem}
+                            value={fontSize}
+                            onFontSizeChange={value => setFontSize(value)}
+                        />
+
+                        {/* Textfarbe ändern */}
+                        <FontColorDropdown style={styles.dropdownItem}
+                            color={textColor}
+                            onFontColorChange={color => setTextColor(color)}
+                        />
+
+                        {/* Schriftart ändern */}
+                        <FontFamilyDropdown style={styles.dropdownItem}
+                            fontFamily={fontFamily}
+                            onFontFamilyChange={font => setFontFamily(font)}
+                        />
+                    </View>
+
+                    {/* TextInput */}
+                    <TextInput
+                        value={text}
+                        onChangeText={setText}
+                        placeholder="Füge Text hinzu"
+                        multiline={true}
+                        style={{ 
+                            color: textColor, 
+                            fontSize: fontSize, 
+                            fontFamily: fontFamily, 
+                            width: '100%', // Damit es die volle Breite ausfüllt
+                            borderColor: '#ccc',
+                            borderWidth: 1,
+                            marginBottom: 20, // Abstand zwischen Input-Feld und Button
+                        }}
+                    />
+                    
+                    {/* Bestätigen Button */}
+                    <TouchableOpacity
+                        style={{ marginTop: 10 }}
+                        onPress={() => {
+                            setTextModalVisible(!isTextModalVisible);
+                        }}
+                    >
+                        <Text>OK</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
+
 
         <Modal
             animationType="slide"
@@ -197,7 +238,6 @@ const styles = StyleSheet.create({
     },
     textInput: {
     position: 'absolute',
-    color: 'black',
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 4,
@@ -208,14 +248,13 @@ const styles = StyleSheet.create({
 },
     overlayText: {
         position: 'absolute',
-        color: 'black',
         zIndex: 5, 
     },
     buttonContainer: {
         position: 'absolute',
         right: 10,
+        bottom: 100,
         flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center',
         zIndex: 10,
     },
@@ -223,6 +262,17 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 20, 
         right: 20,
+    },
+    editcon:{
+        width: "50",
+        height: "50",
+        backgroundColor: "white",
+        borderRadius: 50,
+        marginBottom: 20,
+    },
+    editb: {
+        color: "black",
+        padding: 10,
     },
     centered: {
         flex: 1,
@@ -238,21 +288,30 @@ const styles = StyleSheet.create({
         elevation: 5
     },
     inputText: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: 'rgba(0,0,0,0.8)',  // Semi-transparenter Hintergrund
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.8)',  // Semi-transparenter Hintergrund
+    marginTop: -100,  // Um das Modal nach oben zu verschieben
     },
     modalInputText: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        justifyContent: "center",
-        alignItems: "center",
+    width: '100%',
+    height: '100%',
+    backgroundColor: "white",
+    padding: 35,
+    justifyContent: "center",
+    alignItems: "center",
     },
-
+    dropdownContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 20,  // Abstand zwischen den Dropdowns und dem Input-Feld               
+    },
+    dropdownItem: {  // Neuer Stil für die einzelnen Dropdowns
+        width: '30%',  // Gib jeder Dropdown 30% der Breite
+        margin: 5,  // Ein bisschen Abstand zwischen den Dropdowns
+    },
 });
 
 
