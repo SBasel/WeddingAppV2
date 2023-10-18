@@ -48,6 +48,7 @@ export function ImageEditor({ route, navigation }) {
     try {
         await uploadImage(capturedImage); // Speichern Sie das erfasste Bild und nicht das Originalbild
         console.log("Erfolgreich gespeichert!");
+        onClose();
     } catch (error) {
         console.log("Fehler beim Speichern des Bildes.");
     }
