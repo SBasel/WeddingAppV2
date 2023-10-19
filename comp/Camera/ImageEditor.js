@@ -61,6 +61,13 @@ export function ImageEditor({ route, navigation }) {
     // In diesem Fall bleibt er leer, weil wir nur das Bild durch den 'key' Prop neu rendern wollen
     }, [text]);
 
+    const isSafariBrowser = () => {
+  if (Platform.OS === 'web') {
+    const userAgent = window.navigator.userAgent;
+    return /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+  }
+  return false;
+};
 
 
     const onClose = () => {
@@ -144,11 +151,13 @@ export function ImageEditor({ route, navigation }) {
                     </TouchableOpacity>
                 ) : (
                     <>
+                    {!isSafariBrowser() && (
                     <View style={styles.editcon}>
-                        <TouchableOpacity onPress={() => setTextModalVisible(true)} style={styles.editb} >
-                            <FontAwesome5 name="pen" size={24} />
+                        <TouchableOpacity onPress={() => setTextModalVisible(true)} style={styles.editb}>
+                        <FontAwesome5 name="pen" size={24} />
                         </TouchableOpacity>
-                        </View>  
+                    </View>
+                    )}  
                     <View style={styles.editcon}>    
                         <TouchableOpacity onPress={captureImageWithText } style={styles.editb}>
                             <FontAwesome5 name="save" size={24}   />
