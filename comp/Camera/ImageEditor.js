@@ -6,6 +6,7 @@ import ViewShot from "react-native-view-shot";
 import { FontColorDropdown } from './fontHandler/FontColorDropdown.js';
 import { FontFamilyDropdown } from './fontHandler/FontFamilyDropdown.js';
 import { FontSizeDropdown } from './fontHandler/FontSizeDropdown.js';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 
 export function ImageEditor({ route, navigation }) {
@@ -26,27 +27,16 @@ export function ImageEditor({ route, navigation }) {
 
 
 
-    const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: (evt, gestureState) => {
-        evt.preventDefault();
-        return true;
-    },
-    onMoveShouldSetPanResponder: (evt, gestureState) => {
-        evt.preventDefault();
-        return true;  
-    },
-    onPanResponderGrant: (evt, gestureState) => {
-        setOffsetX(textPosition.x - gestureState.x0);
-        setOffsetY(textPosition.y - gestureState.y0);
-    },
-    onPanResponderMove: (evt, gestureState) => {
-        evt.preventDefault(); 
-        setTextPosition({
-            x: gestureState.moveX + offsetX,
-            y: gestureState.moveY + offsetY
-        });
-    },
-});
+    const onGestureEvent = ({ nativeEvent }) => {
+        if (nativeEvent.oldState === 4) {
+            setTextPosition(prevPos => {
+                return {
+                    x: prevPos.x + nativeEvent.translationX,
+                    y: prevPos.y + nativeEvent.translationY
+                };
+            });
+        }
+    };
 
 
     const onClose = () => {
@@ -95,29 +85,19 @@ export function ImageEditor({ route, navigation }) {
 
 
     return (
-        <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-        <View style={styles.editorContainer}>
-            <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
-            <Image 
-                source={{ uri: imageUri }} 
-                style={{ 
-                    width: Dimensions.get('window').width, 
-                    height: Dimensions.get('window').height - 100,
-                    userDrag: 'none', 
-                    userSelect: 'none' 
-                }} 
-            />
-
-            
-           
-            
-            {!isEditing && (
-                <Text {...panResponder.panHandlers} style={{...styles.overlayText, fontSize: fontSize, color: textColor, fontFamily: fontFamily, left: textPosition.x, top: textPosition.y}}>{text}</Text>
-            )}
-            </ViewShot>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+            <View style={styles.editorContainer}>
+                <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
+                    <Image 
+                        source={{ uri: imageUri }} 
+                        style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} 
+                    />
+                    {!isEditing && (
+                        <PanGestureHandler onGestureEvent={onGestureEvent} onHandlerStateChange={onGestureEvent}>
+                            <Text style={{...styles.overlayText, fontSize: fontSize, color: textColor, fontFamily: fontFamily, position: 'absolute', left: textPosition.x, top: textPosition.y}}>{text}</Text>
+                        </PanGestureHandler>
+                    )}
+                </ViewShot>
             <View style={styles.buttonContainer}>
                 {isEditing ? (
                     <TouchableOpacity onPress={onSave}>
