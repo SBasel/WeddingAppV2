@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect} from 'react';
 import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, Slider, Picker } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
@@ -22,7 +22,9 @@ export function ImageEditor({ route, navigation }) {
     const [isModalVisible, setModalVisible] = useState(false);
     const [isTextModalVisible, setTextModalVisible] = useState(false);
     const [textColor, setTextColor] = useState('black'); 
-    const [fontFamily, setFontFamily] = useState('Arial'); 
+    const [fontFamily, setFontFamily] = useState('Arial');
+    const [refreshImage, setRefreshImage] = useState(false);
+
 
 
 
@@ -53,6 +55,11 @@ export function ImageEditor({ route, navigation }) {
         });
     },
 });
+
+    useEffect(() => {
+    // Logik, die ausgeführt wird, wenn sich 'text' ändert
+    // In diesem Fall bleibt er leer, weil wir nur das Bild durch den 'key' Prop neu rendern wollen
+    }, [text]);
 
 
 
@@ -106,6 +113,7 @@ export function ImageEditor({ route, navigation }) {
         <View style={styles.editorContainer}>
             <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
             <Image 
+                key={refreshImage.toString()} // Einzigartiger Schlüssel zum Erzwingen des Neu-Renderns
                 source={{ uri: imageUri }} 
                 style={{ 
                     width: Dimensions.get('window').width, 
@@ -114,8 +122,6 @@ export function ImageEditor({ route, navigation }) {
                     userSelect: 'none' 
                 }} 
             />
-
-            
             {isEditing && (
                 <TextInput
                     style={{...styles.textInput, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}
@@ -217,6 +223,7 @@ export function ImageEditor({ route, navigation }) {
                         style={{ marginTop: 10 }}
                         onPress={() => {
                             setTextModalVisible(!isTextModalVisible);
+                            setRefreshImage(prev => !prev); // Bild neu rendern
                         }}
                     >
                         <FontAwesome5 name="check" size={24} color="black" />
