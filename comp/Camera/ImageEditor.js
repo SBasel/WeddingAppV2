@@ -27,18 +27,27 @@ export function ImageEditor({ route, navigation }) {
 
 
     const panResponder = PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onPanResponderGrant: (evt, gestureState) => {
-            setOffsetX(textPosition.x - gestureState.x0);
-            setOffsetY(textPosition.y - gestureState.y0);
-        },
-        onPanResponderMove: (evt, gestureState) => {
-            setTextPosition({
-                x: gestureState.moveX + offsetX,
-                y: gestureState.moveY + offsetY
-            });
-        },
-    });
+    onStartShouldSetPanResponder: (evt, gestureState) => {
+        evt.preventDefault();
+        return true;
+    },
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+        evt.preventDefault();
+        return true;  
+    },
+    onPanResponderGrant: (evt, gestureState) => {
+        setOffsetX(textPosition.x - gestureState.x0);
+        setOffsetY(textPosition.y - gestureState.y0);
+    },
+    onPanResponderMove: (evt, gestureState) => {
+        evt.preventDefault(); 
+        setTextPosition({
+            x: gestureState.moveX + offsetX,
+            y: gestureState.moveY + offsetY
+        });
+    },
+});
+
 
     const onClose = () => {
         navigation.goBack();
@@ -92,17 +101,18 @@ export function ImageEditor({ route, navigation }) {
         >
         <View style={styles.editorContainer}>
             <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
-            <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
+            <Image 
+                source={{ uri: imageUri }} 
+                style={{ 
+                    width: Dimensions.get('window').width, 
+                    height: Dimensions.get('window').height - 100,
+                    userDrag: 'none', 
+                    userSelect: 'none' 
+                }} 
+            />
+
             
-            {isEditing && (
-                <TextInput
-                    style={{...styles.textInput, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}
-                    value={text}
-                    onChangeText={setText}
-                    placeholder="Füge Text hinzu"
-                    multiline={true}
-                />
-            )}
+           
             
             {!isEditing && (
                 <Text {...panResponder.panHandlers} style={{...styles.overlayText, fontSize: fontSize, color: textColor, fontFamily: fontFamily, left: textPosition.x, top: textPosition.y}}>{text}</Text>
