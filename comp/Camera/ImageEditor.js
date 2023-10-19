@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect} from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, Slider, Picker } from 'react-native';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, Keyboard } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
 import ViewShot from "react-native-view-shot";
@@ -113,7 +113,7 @@ export function ImageEditor({ route, navigation }) {
         <View style={styles.editorContainer}>
             <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
             <Image 
-                key={refreshImage.toString()} // Einzigartiger Schlüssel zum Erzwingen des Neu-Renderns
+                key={text}
                 source={{ uri: imageUri }} 
                 style={{ 
                     width: Dimensions.get('window').width, 
@@ -122,6 +122,7 @@ export function ImageEditor({ route, navigation }) {
                     userSelect: 'none' 
                 }} 
             />
+
             {isEditing && (
                 <TextInput
                     style={{...styles.textInput, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}
@@ -224,10 +225,12 @@ export function ImageEditor({ route, navigation }) {
                         onPress={() => {
                             setTextModalVisible(!isTextModalVisible);
                             setRefreshImage(prev => !prev); // Bild neu rendern
+                            Keyboard.dismiss(); // Tastatur schließen
                         }}
                     >
                         <FontAwesome5 name="check" size={24} color="black" />
                     </TouchableOpacity>
+
                 </View>
             </View>
         </Modal>
