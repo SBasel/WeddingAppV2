@@ -90,6 +90,7 @@ export function ImageEditor({ route, navigation }) {
 
 
     return (
+        <ScrollView bounces={false}>
         <KeyboardAvoidingView 
         style={{ flex: 1 }} 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -231,6 +232,7 @@ export function ImageEditor({ route, navigation }) {
         </Modal>
         </View>
         </KeyboardAvoidingView>
+        </ScrollView>
     );
 }
 
