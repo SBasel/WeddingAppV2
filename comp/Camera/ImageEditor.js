@@ -144,7 +144,91 @@ export function ImageEditor({ route, navigation }) {
                 <ActivityIndicator size="large" color="#0000ff" />
             </View>
         )}
-        
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isTextModalVisible}
+            onRequestClose={() => {
+                setTextModalVisible(!isTextModalVisible);
+            }}
+        >
+            <View style={styles.inputText}>
+                <View style={styles.modalInputText}>
+                    {/* Dropdown-Container */}
+                    <View style={styles.dropdownContainer}>
+                        {/* Schriftgröße ändern */}
+                        <FontSizeDropdown style={styles.dropdownItem}
+                            value={fontSize}
+                            onFontSizeChange={value => setFontSize(value)}
+                        />
+
+                        {/* Textfarbe ändern */}
+                        <FontColorDropdown style={styles.dropdownItem}
+                            color={textColor}
+                            onFontColorChange={color => setTextColor(color)}
+                        />
+
+                        {/* Schriftart ändern */}
+                        <FontFamilyDropdown style={styles.dropdownItem}
+                            fontFamily={fontFamily}
+                            onFontFamilyChange={font => setFontFamily(font)}
+                        />
+                    </View>
+
+                    {/* TextInput */}
+                    <TextInput
+                        value={text}
+                        onChangeText={setText}
+                        placeholder="Füge Text hinzu"
+                        multiline={true}
+                        style={{ 
+                            color: textColor, 
+                            fontSize: fontSize, 
+                            fontFamily: fontFamily, 
+                            width: '100%', // Damit es die volle Breite ausfüllt
+                            borderColor: '#ccc',
+                            borderWidth: 1,
+                            marginBottom: 20, // Abstand zwischen Input-Feld und Button
+                        }}
+                    />
+                    
+                    {/* Bestätigen Button */}
+                    <TouchableOpacity
+                        style={{ marginTop: 10 }}
+                        onPress={() => {
+                            setTextModalVisible(!isTextModalVisible);
+                        }}
+                    >
+                        <FontAwesome5 name="check" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
+
+
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => {
+                setModalVisible(!isModalVisible);
+            }}
+        >
+            <View style={styles.centered}>
+                <View style={styles.modalView}>
+                    <Text>Bild erfolgreich gespeichert!</Text>
+                    <TouchableOpacity
+                        style={{ marginTop: 10 }}
+                        onPress={() => {
+                            setModalVisible(!isModalVisible);
+                            navigation.navigate('Camera'); // Navigiere zurück zur Camera
+                        }}
+                    >
+                        <Text>OK</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
         </View>
         </KeyboardAvoidingView>
     );
@@ -161,14 +245,14 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 4,
-    zIndex: 5,
+    zIndex: 9999,
     paddingHorizontal: 5, 
     minWidth: 150, 
     maxWidth: Dimensions.get('window').width - 40,
 },
     overlayText: {
         position: 'absolute',
-        zIndex: 5, 
+        zIndex: 9999, 
     },
     buttonContainer: {
         position: 'absolute',
