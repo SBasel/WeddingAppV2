@@ -6,6 +6,7 @@ import ViewShot from "react-native-view-shot";
 import { FontColorDropdown } from './fontHandler/FontColorDropdown.js';
 import { FontFamilyDropdown } from './fontHandler/FontFamilyDropdown.js';
 import { FontSizeDropdown } from './fontHandler/FontSizeDropdown.js';
+import { TextEditor } from './TextEditor';
 
 
 export function ImageEditor({ route, navigation }) {
@@ -22,7 +23,8 @@ export function ImageEditor({ route, navigation }) {
     const [isModalVisible, setModalVisible] = useState(false);
     const [isTextModalVisible, setTextModalVisible] = useState(false);
     const [textColor, setTextColor] = useState('black'); 
-    const [fontFamily, setFontFamily] = useState('Arial'); 
+    const [fontFamily, setFontFamily] = useState('Arial');
+    
 
 
 
@@ -144,66 +146,18 @@ export function ImageEditor({ route, navigation }) {
                 <ActivityIndicator size="large" color="#0000ff" />
             </View>
         )}
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isTextModalVisible}
-            onRequestClose={() => {
-                setTextModalVisible(!isTextModalVisible);
-            }}
-        >
-            <View style={styles.inputText}>
-                <View style={styles.modalInputText}>
-                    {/* Dropdown-Container */}
-                    <View style={styles.dropdownContainer}>
-                        {/* Schriftgröße ändern */}
-                        <FontSizeDropdown style={styles.dropdownItem}
-                            value={fontSize}
-                            onFontSizeChange={value => setFontSize(value)}
-                        />
-
-                        {/* Textfarbe ändern */}
-                        <FontColorDropdown style={styles.dropdownItem}
-                            color={textColor}
-                            onFontColorChange={color => setTextColor(color)}
-                        />
-
-                        {/* Schriftart ändern */}
-                        <FontFamilyDropdown style={styles.dropdownItem}
-                            fontFamily={fontFamily}
-                            onFontFamilyChange={font => setFontFamily(font)}
-                        />
-                    </View>
-
-                    {/* TextInput */}
-                    <TextInput
-                        value={text}
-                        onChangeText={setText}
-                        placeholder="Füge Text hinzu"
-                        multiline={true}
-                        style={{ 
-                            color: textColor, 
-                            fontSize: 18, 
-                            fontFamily: fontFamily, 
-                            width: '100%', // Damit es die volle Breite ausfüllt
-                            borderColor: '#ccc',
-                            borderWidth: 1,
-                            marginBottom: 20, // Abstand zwischen Input-Feld und Button
-                        }}
-                    />
-                    
-                    {/* Bestätigen Button */}
-                    <TouchableOpacity
-                        style={{ marginTop: 10 }}
-                        onPress={() => {
-                            setTextModalVisible(!isTextModalVisible);
-                        }}
-                    >
-                        <FontAwesome5 name="check" size={24} color="black" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </Modal>
+        <TextEditor
+            isTextModalVisible={isTextModalVisible}
+            setTextModalVisible={setTextModalVisible}
+            text={text}
+            setText={setText}
+            textColor={textColor}
+            setTextColor={setTextColor}
+            fontFamily={fontFamily}
+            setFontFamily={setFontFamily}
+            fontSize={fontSize}
+            setFontSize={setFontSize}
+        />
 
 
         <Modal
@@ -291,31 +245,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         elevation: 5
     },
-    inputText: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: 'rgba(0,0,0,0.8)',  // Semi-transparenter Hintergrund
-    marginTop: -100,  // Um das Modal nach oben zu verschieben
-    },
-    modalInputText: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: "white",
-    padding: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    },
-    dropdownContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 20,  // Abstand zwischen den Dropdowns und dem Input-Feld               
-    },
-    dropdownItem: {  // Neuer Stil für die einzelnen Dropdowns
-        width: '30%',  // Gib jeder Dropdown 30% der Breite
-        margin: 5,  // Ein bisschen Abstand zwischen den Dropdowns
-    },
+    
 });
 
 
