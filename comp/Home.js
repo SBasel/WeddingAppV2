@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
 
     },
     headerText: {
-        fontFamily: 'Great Vibes',
+        fontFamily: 'GreatVibes',
         fontSize: 46,
         textAlign: 'center',
     },
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         height: 400,
     },
     mainImage: {
-      position: 'absolute',
+        position: 'absolute',
         top: 35,
         left: 53,
         width: '70%',
