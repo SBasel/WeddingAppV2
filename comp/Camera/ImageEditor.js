@@ -28,11 +28,15 @@ export function ImageEditor({ route, navigation }) {
 
     const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => {
-        evt.preventDefault();
+        if (Platform.OS === 'web') {
+            evt.preventDefault();
+        }
         return true;
     },
     onMoveShouldSetPanResponder: (evt, gestureState) => {
-        evt.preventDefault();
+        if (Platform.OS === 'web') {
+            evt.preventDefault();
+        }
         return true;  
     },
     onPanResponderGrant: (evt, gestureState) => {
@@ -40,13 +44,16 @@ export function ImageEditor({ route, navigation }) {
         setOffsetY(textPosition.y - gestureState.y0);
     },
     onPanResponderMove: (evt, gestureState) => {
-        evt.preventDefault(); 
+        if (Platform.OS === 'web') {
+            evt.preventDefault();
+        } 
         setTextPosition({
             x: gestureState.moveX + offsetX,
             y: gestureState.moveY + offsetY
         });
     },
 });
+
 
 
     const onClose = () => {
