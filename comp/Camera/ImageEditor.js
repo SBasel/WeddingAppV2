@@ -102,10 +102,7 @@ export function ImageEditor({ route, navigation }) {
 
 
     return (
-        <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="overlay">
         <View style={styles.editorContainer}>
             <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
             <Image 

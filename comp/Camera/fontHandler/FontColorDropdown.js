@@ -57,7 +57,7 @@ export function FontColorDropdown({ fontColor, onFontColorChange }) {
                                 }}
                             />
                         )}
-                        numColumns={5} // Wie viele Farben pro Zeile angezeigt werden sollen
+                        numColumns={5}
                         keyExtractor={(item) => item}
                     />
                 </View>
