@@ -29,15 +29,15 @@ export function ImageEditor({ route, navigation }) {
         onStartShouldSetPanResponderCapture: () => true,
         onMoveShouldSetPanResponderCapture: () => true,
         onPanResponderGrant: (evt, gestureState) => {
-            setOffsetX(textPosition.x - gestureState.x0);
-            setOffsetY(textPosition.y - gestureState.y0);
+        setOffsetX(textPosition.x - gestureState.x0);
+        setOffsetY(textPosition.y - gestureState.y0);
         },
         onPanResponderMove: (evt, gestureState) => {
-            setTextPosition({
-                x: gestureState.moveX + offsetX,
-                y: gestureState.moveY + offsetY
-            });
-        },
+        setTextPosition({
+            x: gestureState.moveX + offsetX,
+            y: gestureState.moveY + offsetY
+        });
+    },
     });
 
     const onClose = () => {
