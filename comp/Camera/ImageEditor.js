@@ -28,6 +28,9 @@ export function ImageEditor({ route, navigation }) {
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,  // Hinzu
+        onStartShouldSetPanResponderCapture: () => true,  // Hinzu
+        onMoveShouldSetPanResponderCapture: () => true,  // Hinzu
         onPanResponderGrant: (evt, gestureState) => {
             setOffsetX(textPosition.x - gestureState.x0);
             setOffsetY(textPosition.y - gestureState.y0);
@@ -39,6 +42,7 @@ export function ImageEditor({ route, navigation }) {
             });
         },
     });
+
 
     const onClose = () => {
         navigation.goBack();
