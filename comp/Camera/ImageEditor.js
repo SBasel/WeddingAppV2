@@ -183,7 +183,7 @@ export function ImageEditor({ route, navigation }) {
                         multiline={true}
                         style={{ 
                             color: textColor, 
-                            fontSize: fontSize, 
+                            fontSize: 18, 
                             fontFamily: fontFamily, 
                             width: '100%', // Damit es die volle Breite ausfüllt
                             borderColor: '#ccc',
