@@ -21,7 +21,8 @@ export function ImageEditor({ route, navigation }) {
     const [isModalVisible, setModalVisible] = useState(false);
     const [isTextModalVisible, setTextModalVisible] = useState(false);
     const [textColor, setTextColor] = useState('black'); 
-    const [fontFamily, setFontFamily] = useState('Arial'); 
+    const [fontFamily, setFontFamily] = useState('Arial');
+    const [scrollEnabled, setScrollEnabled] = useState(true);
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -79,7 +80,7 @@ export function ImageEditor({ route, navigation }) {
 
     // Render return
     return (
-        <ScrollView style={{ flex: 1 }} bounces={false}>
+        <ScrollView style={{ flex: 1 }} bounces={false} scrollEnabled={scrollEnabled}>
         <KeyboardAvoidingView 
             style={{ flex: 1 }} 
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -234,14 +235,14 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 4,
-    zIndex: 5,
+    zIndex: 9999,
     paddingHorizontal: 5, 
     minWidth: 150, 
     maxWidth: Dimensions.get('window').width - 40,
 },
     overlayText: {
         position: 'absolute',
-        zIndex: 5, 
+        zIndex: 9999, 
     },
     buttonContainer: {
         position: 'absolute',
