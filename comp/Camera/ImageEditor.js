@@ -1,12 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, Slider, Picker } from 'react-native';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
 import ViewShot from "react-native-view-shot";
 import { FontColorDropdown } from './fontHandler/FontColorDropdown.js';
 import { FontFamilyDropdown } from './fontHandler/FontFamilyDropdown.js';
 import { FontSizeDropdown } from './fontHandler/FontSizeDropdown.js';
-
 
 export function ImageEditor({ route, navigation }) {
     const { imageUri } = route.params;
@@ -24,13 +23,11 @@ export function ImageEditor({ route, navigation }) {
     const [textColor, setTextColor] = useState('black'); 
     const [fontFamily, setFontFamily] = useState('Arial'); 
 
-
-
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,  // Hinzu
-        onStartShouldSetPanResponderCapture: () => true,  // Hinzu
-        onMoveShouldSetPanResponderCapture: () => true,  // Hinzu
+        onMoveShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponderCapture: () => true,
+        onMoveShouldSetPanResponderCapture: () => true,
         onPanResponderGrant: (evt, gestureState) => {
             setOffsetX(textPosition.x - gestureState.x0);
             setOffsetY(textPosition.y - gestureState.y0);
@@ -42,7 +39,6 @@ export function ImageEditor({ route, navigation }) {
             });
         },
     });
-
 
     const onClose = () => {
         navigation.goBack();
@@ -71,80 +67,70 @@ export function ImageEditor({ route, navigation }) {
         setIsLoading(false);
     }
 
-
-
     const captureImageWithText = async () => {
         try {
             const dataUri = await viewShotRef.current.capture({ format: 'base64' });
             console.log("Bild erfolgreich erfasst!");
-            console.log("Test", dataUri)
             onDiskSave(dataUri);
         } catch (error) {
             console.log("Fehler beim Erfassen des Bildes: ", error);
         }
     };
 
-
-
-
-
-
+    // Render return
     return (
         <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }} 
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-        <View style={styles.editorContainer}>
-            <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
-            <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
-            
-            {isEditing && (
-                <TextInput
-                    style={{...styles.textInput, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}
-                    value={text}
-                    onChangeText={setText}
-                    placeholder="Füge Text hinzu"
-                    multiline={true}
-                />
-            )}
-            
-            {!isEditing && (
-                <Text {...panResponder.panHandlers} style={{...styles.overlayText, fontSize: fontSize, color: textColor, fontFamily: fontFamily, left: textPosition.x, top: textPosition.y}}>{text}</Text>
-            )}
-            </ViewShot>
-            <View style={styles.buttonContainer}>
-                {isEditing ? (
-                    <TouchableOpacity onPress={onSave}>
-                        <FontAwesome5 name="check" size={24} color="green" />
-                    </TouchableOpacity>
-                ) : (
-                    <>
-                    <View style={styles.editcon}>
-                        <TouchableOpacity onPress={() => setTextModalVisible(true)} style={styles.editb} >
-                            <FontAwesome5 name="pen" size={24} />
+            <View style={styles.editorContainer}>
+                <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
+                    <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
+                    {isEditing && (
+                        <TextInput
+                            style={{...styles.textInput, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}
+                            value={text}
+                            onChangeText={setText}
+                            placeholder="Füge Text hinzu"
+                            multiline={true}
+                        />
+                    )}
+                    {!isEditing && (
+                        <Text {...panResponder.panHandlers} style={{...styles.overlayText, fontSize: fontSize, color: textColor, fontFamily: fontFamily, left: textPosition.x, top: textPosition.y}}>{text}</Text>
+                    )}
+                </ViewShot>
+                <View style={styles.buttonContainer}>
+                    {isEditing ? (
+                        <TouchableOpacity onPress={onSave}>
+                            <FontAwesome5 name="check" size={24} color="green" />
                         </TouchableOpacity>
-                        </View>  
-                    <View style={styles.editcon}>    
-                        <TouchableOpacity onPress={captureImageWithText } style={styles.editb}>
-                            <FontAwesome5 name="save" size={24}   />
-                        </TouchableOpacity>
-                        </View>
-                    </>
+                    ) : (
+                        <>
+                            <View style={styles.editcon}>
+                                <TouchableOpacity onPress={() => setTextModalVisible(true)} style={styles.editb} >
+                                    <FontAwesome5 name="pen" size={24} />
+                                </TouchableOpacity>
+                            </View>  
+                            <View style={styles.editcon}>    
+                                <TouchableOpacity onPress={captureImageWithText } style={styles.editb}>
+                                    <FontAwesome5 name="save" size={24}   />
+                                </TouchableOpacity>
+                            </View>
+                        </>
+                    )}
+                </View>
+                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                    <FontAwesome5 name="times" size={24} color="black" />
+                </TouchableOpacity>
+                {capturedImage && (
+                    <Image source={{ uri: capturedImage }} style={{ width: 100, height: 100, position: 'absolute', bottom: 10, right: 10, zIndex: -999}} />
                 )}
-            </View>
-
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <FontAwesome5 name="times" size={24} color="black" />
-            </TouchableOpacity>
-            {capturedImage && (
-            <Image source={{ uri: capturedImage }} style={{ width: 100, height: 100, position: 'absolute', bottom: 10, right: 10, zIndex: -999}} />
-        )}
-        {isLoading && (
-            <View style={{...styles.centered, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)'}}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        )}
-        <Modal
+                {isLoading && (
+                    <View style={{...styles.centered, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)'}}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    </View>
+                )}
+                <Modal
             animationType="slide"
             transparent={true}
             visible={isTextModalVisible}
@@ -229,10 +215,11 @@ export function ImageEditor({ route, navigation }) {
                 </View>
             </View>
         </Modal>
-        </View>
+            </View>
         </KeyboardAvoidingView>
     );
 }
+
 
 const styles = StyleSheet.create({
     editorContainer: {
