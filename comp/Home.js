@@ -12,7 +12,7 @@ export function Home({ navigation }) {
 
     return (
         <View style={styles.titleMobile}>
-            <Text style={styles.headerText}>Kathariana</Text>
+            <Text style={styles.headerText}>Katharina</Text>
             <Text style={styles.headerText}>& Patrick</Text>
             <View style={styles.imageContainer}>
                 <Image source={require('../assets/placholder.jpeg')} style={styles.mainImage} />
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontFamily: 'GreatVibes',
-        fontSize: 46,
+        fontSize: 50,
         textAlign: 'center',
     },
     imageContainer: {

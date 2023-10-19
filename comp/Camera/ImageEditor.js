@@ -174,8 +174,25 @@ export function ImageEditor({ route, navigation }) {
             }}
         >
             <View style={styles.inputText}>
+                
                 <View style={styles.modalInputText}>
                     {/* Dropdown-Container */}
+                    {/* TextInput */}
+                    <TextInput
+                        value={text}
+                        onChangeText={setText}
+                        placeholder="Füge Text hinzu"
+                        multiline={true}
+                        style={{ 
+                            color: textColor, 
+                            fontSize: fontSize, 
+                            fontFamily: fontFamily, 
+                            width: '100%', 
+                            borderColor: '#ccc',
+                            borderWidth: 1,
+                            marginBottom: 20, 
+                        }}
+                    />
                     <View style={styles.dropdownContainer}>
                         {/* Schriftgröße ändern */}
                         <FontSizeDropdown style={styles.dropdownItem}
@@ -196,22 +213,7 @@ export function ImageEditor({ route, navigation }) {
                         />
                     </View>
 
-                    {/* TextInput */}
-                    <TextInput
-                        value={text}
-                        onChangeText={setText}
-                        placeholder="Füge Text hinzu"
-                        multiline={true}
-                        style={{ 
-                            color: textColor, 
-                            fontSize: fontSize, 
-                            fontFamily: fontFamily, 
-                            width: '100%', // Damit es die volle Breite ausfüllt
-                            borderColor: '#ccc',
-                            borderWidth: 1,
-                            marginBottom: 20, // Abstand zwischen Input-Feld und Button
-                        }}
-                    />
+                    
                     
                     {/* Bestätigen Button */}
                     <TouchableOpacity
@@ -316,8 +318,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: 'rgba(0,0,0,0.8)',  // Semi-transparenter Hintergrund
-    marginTop: -100,  // Um das Modal nach oben zu verschieben
+    backgroundColor: 'rgba(0,0,0,0.8)',  
+    marginTop: -100,
     },
     modalInputText: {
     width: '100%',
@@ -331,11 +333,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    marginBottom: 20,  // Abstand zwischen den Dropdowns und dem Input-Feld               
+    marginBottom: 20,  
     },
-    dropdownItem: {  // Neuer Stil für die einzelnen Dropdowns
-        width: '30%',  // Gib jeder Dropdown 30% der Breite
-        margin: 5,  // Ein bisschen Abstand zwischen den Dropdowns
+    dropdownItem: {  
+        width: '30%', 
+        margin: 5, 
     },
 });
 
