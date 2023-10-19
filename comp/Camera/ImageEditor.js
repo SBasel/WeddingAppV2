@@ -6,7 +6,6 @@ import ViewShot from "react-native-view-shot";
 import { FontColorDropdown } from './fontHandler/FontColorDropdown.js';
 import { FontFamilyDropdown } from './fontHandler/FontFamilyDropdown.js';
 import { FontSizeDropdown } from './fontHandler/FontSizeDropdown.js';
-import { TextEditor } from './TextEditor';
 
 
 export function ImageEditor({ route, navigation }) {
@@ -23,34 +22,23 @@ export function ImageEditor({ route, navigation }) {
     const [isModalVisible, setModalVisible] = useState(false);
     const [isTextModalVisible, setTextModalVisible] = useState(false);
     const [textColor, setTextColor] = useState('black'); 
-    const [fontFamily, setFontFamily] = useState('Arial');
-    
+    const [fontFamily, setFontFamily] = useState('Arial'); 
 
 
 
     const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: (evt, gestureState) => {
-        evt.preventDefault();
-        return true;
-    },
-    onMoveShouldSetPanResponder: (evt, gestureState) => {
-        evt.preventDefault();
-        return true;  
-    },
-    onPanResponderGrant: (evt, gestureState) => {
-        setOffsetX(textPosition.x - gestureState.x0);
-        setOffsetY(textPosition.y - gestureState.y0);
-    },
-    onPanResponderMove: (evt, gestureState) => {
-        evt.preventDefault(); 
-        setTextPosition({
-            x: gestureState.moveX + offsetX,
-            y: gestureState.moveY + offsetY
-        });
-    },
-});
-
-
+        onStartShouldSetPanResponder: () => true,
+        onPanResponderGrant: (evt, gestureState) => {
+            setOffsetX(textPosition.x - gestureState.x0);
+            setOffsetY(textPosition.y - gestureState.y0);
+        },
+        onPanResponderMove: (evt, gestureState) => {
+            setTextPosition({
+                x: gestureState.moveX + offsetX,
+                y: gestureState.moveY + offsetY
+            });
+        },
+    });
 
     const onClose = () => {
         navigation.goBack();
@@ -104,15 +92,8 @@ export function ImageEditor({ route, navigation }) {
         >
         <View style={styles.editorContainer}>
             <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
-            <Image 
-                source={{ uri: imageUri }} 
-                style={{ 
-                    width: Dimensions.get('window').width, 
-                    height: Dimensions.get('window').height - 100,
-                    userDrag: 'none', 
-                    userSelect: 'none' 
-                }} 
-            />
+            <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
+            
             {isEditing && (
                 <TextInput
                     style={{...styles.textInput, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}
@@ -159,18 +140,66 @@ export function ImageEditor({ route, navigation }) {
                 <ActivityIndicator size="large" color="#0000ff" />
             </View>
         )}
-        <TextEditor
-            isTextModalVisible={isTextModalVisible}
-            setTextModalVisible={setTextModalVisible}
-            text={text}
-            setText={setText}
-            textColor={textColor}
-            setTextColor={setTextColor}
-            fontFamily={fontFamily}
-            setFontFamily={setFontFamily}
-            fontSize={fontSize}
-            setFontSize={setFontSize}
-        />
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isTextModalVisible}
+            onRequestClose={() => {
+                setTextModalVisible(!isTextModalVisible);
+            }}
+        >
+            <View style={styles.inputText}>
+                <View style={styles.modalInputText}>
+                    {/* Dropdown-Container */}
+                    <View style={styles.dropdownContainer}>
+                        {/* Schriftgröße ändern */}
+                        <FontSizeDropdown style={styles.dropdownItem}
+                            value={fontSize}
+                            onFontSizeChange={value => setFontSize(value)}
+                        />
+
+                        {/* Textfarbe ändern */}
+                        <FontColorDropdown style={styles.dropdownItem}
+                            color={textColor}
+                            onFontColorChange={color => setTextColor(color)}
+                        />
+
+                        {/* Schriftart ändern */}
+                        <FontFamilyDropdown style={styles.dropdownItem}
+                            fontFamily={fontFamily}
+                            onFontFamilyChange={font => setFontFamily(font)}
+                        />
+                    </View>
+
+                    {/* TextInput */}
+                    <TextInput
+                        value={text}
+                        onChangeText={setText}
+                        placeholder="Füge Text hinzu"
+                        multiline={true}
+                        style={{ 
+                            color: textColor, 
+                            fontSize: fontSize, 
+                            fontFamily: fontFamily, 
+                            width: '100%', // Damit es die volle Breite ausfüllt
+                            borderColor: '#ccc',
+                            borderWidth: 1,
+                            marginBottom: 20, // Abstand zwischen Input-Feld und Button
+                        }}
+                    />
+                    
+                    {/* Bestätigen Button */}
+                    <TouchableOpacity
+                        style={{ marginTop: 10 }}
+                        onPress={() => {
+                            setTextModalVisible(!isTextModalVisible);
+                        }}
+                    >
+                        <FontAwesome5 name="check" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
 
 
         <Modal
@@ -212,14 +241,14 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 4,
-    zIndex: 9999,
+    zIndex: 5,
     paddingHorizontal: 5, 
     minWidth: 150, 
     maxWidth: Dimensions.get('window').width - 40,
 },
     overlayText: {
         position: 'absolute',
-        zIndex: 9999, 
+        zIndex: 5, 
     },
     buttonContainer: {
         position: 'absolute',
@@ -258,7 +287,31 @@ const styles = StyleSheet.create({
         alignItems: "center",
         elevation: 5
     },
-    
+    inputText: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.8)',  // Semi-transparenter Hintergrund
+    marginTop: -100,  // Um das Modal nach oben zu verschieben
+    },
+    modalInputText: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: "white",
+    padding: 35,
+    justifyContent: "center",
+    alignItems: "center",
+    },
+    dropdownContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 20,  // Abstand zwischen den Dropdowns und dem Input-Feld               
+    },
+    dropdownItem: {  // Neuer Stil für die einzelnen Dropdowns
+        width: '30%',  // Gib jeder Dropdown 30% der Breite
+        margin: 5,  // Ein bisschen Abstand zwischen den Dropdowns
+    },
 });
 
 
