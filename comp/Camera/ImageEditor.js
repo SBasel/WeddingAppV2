@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator } from 'react-native';
+import { View, Image, TextInput, StyleSheet, TouchableOpacity, Text, Dimensions, PanResponder, KeyboardAvoidingView, Platform, Modal, ActivityIndicator, ScrollView } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { uploadImage } from './UploadImage.js';
 import ViewShot from "react-native-view-shot";
@@ -79,6 +79,7 @@ export function ImageEditor({ route, navigation }) {
 
     // Render return
     return (
+        <ScrollView style={{ flex: 1 }} bounces={false}>
         <KeyboardAvoidingView 
             style={{ flex: 1 }} 
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -185,7 +186,7 @@ export function ImageEditor({ route, navigation }) {
                             setTextModalVisible(!isTextModalVisible);
                         }}
                     >
-                        <Text>OK</Text>
+                        <FontAwesome5 name="check" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -217,6 +218,7 @@ export function ImageEditor({ route, navigation }) {
         </Modal>
             </View>
         </KeyboardAvoidingView>
+        </ScrollView>
     );
 }
 
