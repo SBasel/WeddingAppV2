@@ -53,7 +53,7 @@ export function TextEditor({
                         multiline={true}
                         style={{ 
                             color: textColor, 
-                            fontSize: 18, 
+                            fontSize: fontSize, 
                             fontFamily: fontFamily, 
                             width: '100%',
                             borderColor: '#ccc',
