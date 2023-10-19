@@ -29,21 +29,27 @@ export function ImageEditor({ route, navigation }) {
 
 
     const panResponder = PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,  // Hinzu
-        onStartShouldSetPanResponderCapture: () => true,  // Hinzu
-        onMoveShouldSetPanResponderCapture: () => true,  // Hinzu
-        onPanResponderGrant: (evt, gestureState) => {
-            setOffsetX(textPosition.x - gestureState.x0);
-            setOffsetY(textPosition.y - gestureState.y0);
-        },
-        onPanResponderMove: (evt, gestureState) => {
-            setTextPosition({
-                x: gestureState.moveX + offsetX,
-                y: gestureState.moveY + offsetY
-            });
-        },
-    });
+    onStartShouldSetPanResponder: (evt, gestureState) => {
+        evt.preventDefault();
+        return true;
+    },
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+        evt.preventDefault();
+        return true;  
+    },
+    onPanResponderGrant: (evt, gestureState) => {
+        setOffsetX(textPosition.x - gestureState.x0);
+        setOffsetY(textPosition.y - gestureState.y0);
+    },
+    onPanResponderMove: (evt, gestureState) => {
+        evt.preventDefault(); 
+        setTextPosition({
+            x: gestureState.moveX + offsetX,
+            y: gestureState.moveY + offsetY
+        });
+    },
+});
+
 
 
     const onClose = () => {
@@ -98,8 +104,15 @@ export function ImageEditor({ route, navigation }) {
         >
         <View style={styles.editorContainer}>
             <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0, result: "data-uri" }}>
-            <Image source={{ uri: imageUri }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height - 100 }} />
-            
+            <Image 
+                source={{ uri: imageUri }} 
+                style={{ 
+                    width: Dimensions.get('window').width, 
+                    height: Dimensions.get('window').height - 100,
+                    userDrag: 'none', 
+                    userSelect: 'none' 
+                }} 
+            />
             {isEditing && (
                 <TextInput
                     style={{...styles.textInput, fontSize: fontSize, left: textPosition.x, top: textPosition.y}}
