@@ -8,6 +8,7 @@ import { Home } from './comp/Home'
 import { Camera } from './comp/Camera/Camera';
 import { ImageEditor } from './comp/Camera/ImageEditor';
 import { Gallery } from './comp/Gallery/Gallery';
+import { Help } from './comp/Help/Help'
 
 const Stack = createStackNavigator();
 
@@ -21,16 +22,12 @@ function CustomFooter({}) {
       <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Camera')}>
         <FontAwesomeIcon icon={faCamera} size={32} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Help')}>
-        <FontAwesomeIcon icon={faQuestion} size={32} />
-      </TouchableOpacity>
       <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Gallery')}>
         <FontAwesomeIcon icon={faImage} size={32} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Option')}>
-        <FontAwesomeIcon icon={faBars} size={32} />
+      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Help')}>
+        <FontAwesomeIcon icon={faQuestion} size={32} />
       </TouchableOpacity>
-      
     </View>
   );
 }
@@ -48,6 +45,7 @@ export function RootNavigator() {
          <Stack.Screen name="Camera" component={Camera} />
          <Stack.Screen name="ImageEditor" component={ImageEditor} />
          <Stack.Screen name="Gallery" component={Gallery} />
+         <Stack.Screen name="Help" component={Help} />
       </Stack.Navigator>
       <CustomFooter />
     </>
