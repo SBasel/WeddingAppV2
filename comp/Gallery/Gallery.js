@@ -11,13 +11,13 @@ export function Gallery() {
 
     useEffect(() => {
         fetchImages();
-    }, []);
+    });
 
     useEffect(() => {
         if (isPlaying) {
             slideShowInterval.current = setInterval(() => {
                 handleNext();
-            }, 3000);
+            }, 2000);
 
             return () => {
                 clearInterval(slideShowInterval.current);
