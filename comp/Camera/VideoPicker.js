@@ -1,11 +1,13 @@
-import React from 'react';
-import { TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { TouchableOpacity, StyleSheet, Alert, Modal, View, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 
 export function VideoPicker() {
     const navigation = useNavigation();
+    const [progress, setProgress] = useState(0); // Fortschritt in Prozent
+    const [isUploading, setIsUploading] = useState(false); // Zustand des Uploads
 
     const openVideoLibrary = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -40,19 +42,34 @@ export function VideoPicker() {
             video: videoData
         };
 
-        try {
-            const response = await fetch('https://www.sbdci.de/kpw/uploadvid.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-            const text = await response.text();
-            console.log(text);
-        } catch (error) {
-            console.error("Fehler beim Hochladen des Videos", error);
-        }
+        setIsUploading(true);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://www.sbdci.de/kpw/uploadvid.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        
+        xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+                const percentComplete = Math.round((event.loaded / event.total) * 100);
+                setProgress(percentComplete);
+            }
+        };
+
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                console.log(xhr.responseText);
+            } else {
+                console.error("Fehler beim Hochladen des Videos");
+            }
+            setIsUploading(false);
+        };
+
+        xhr.onerror = (e) => {
+            console.error("Fehler beim Hochladen des Videos", e);
+            setIsUploading(false);
+        };
+
+        xhr.send(JSON.stringify(data));
     };
 
     const toBase64 = async (uri) => {
@@ -67,9 +84,28 @@ export function VideoPicker() {
     };
 
     return (
-        <TouchableOpacity style={styles.iconButton} onPress={openVideoLibrary}>
-            <FontAwesome name="video-camera" size={32} />
-        </TouchableOpacity>
+        <>
+            <TouchableOpacity style={styles.iconButton} onPress={openVideoLibrary}>
+                <FontAwesome name="video-camera" size={32} />
+            </TouchableOpacity>
+            {isUploading && (
+                <Modal
+                    transparent={true}
+                    animationType="slide"
+                    visible={isUploading}
+                    onRequestClose={() => {
+                        Alert.alert("Modal has been closed.");
+                    }}
+                >
+                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                        <View style={{width: 300, padding: 20, backgroundColor: 'white', borderRadius: 10, alignItems: 'center'}}>
+                            <Text>Uploading Video...</Text>
+                            <Text>{progress}%</Text>
+                        </View>
+                    </View>
+                </Modal>
+            )}
+        </>
     );
 }
 
