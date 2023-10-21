@@ -3,6 +3,8 @@ import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { VideoPicker } from './VideoPicker';
+
 
 export function Camera() {
     const navigation = useNavigation();
@@ -55,6 +57,7 @@ export function Camera() {
                 <TouchableOpacity style={styles.iconButton} onPress={openCamera}>
                     <FontAwesome name="camera" size={32} />
                 </TouchableOpacity>
+                <VideoPicker/>
             </View>
         </View>
     );
