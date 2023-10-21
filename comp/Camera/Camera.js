@@ -57,8 +57,9 @@ export function Camera() {
                 <TouchableOpacity style={styles.iconButton} onPress={openCamera}>
                     <FontAwesome name="camera" size={32} />
                 </TouchableOpacity>
-                <VideoPicker/>
+                
             </View>
+            <VideoPicker/>
         </View>
     );
 }
