@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Alert, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -51,15 +51,21 @@ export function Camera() {
     return (
         <View style={styles.cameraContainer}>
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.iconButton} onPress={openPhotoLibrary}>
-                    <FontAwesome name="upload" size={32} />
-                </TouchableOpacity>
+                
                 <TouchableOpacity style={styles.iconButton} onPress={openCamera}>
                     <FontAwesome name="camera" size={32} />
+                    <Text>Take a Picture</Text>
                 </TouchableOpacity>
-                
+                </View>
+                <View style={styles.buttonsContainer}>
+                    <TouchableOpacity style={styles.iconButton} onPress={openPhotoLibrary}>
+                    <FontAwesome name="upload" size={32} />
+                    <Text>Upload a Picture</Text>
+                </TouchableOpacity>
+                </View>
+                <View style={styles.buttonsContainer}>
+                 <VideoPicker/>
             </View>
-            <VideoPicker/>
         </View>
     );
 }
@@ -77,7 +83,9 @@ const styles = StyleSheet.create({
         padding: 20
     },
     iconButton: {
-        padding: 10
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 

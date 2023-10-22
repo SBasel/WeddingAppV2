@@ -1,10 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { TouchableOpacity, StyleSheet, Alert, Modal, View, Text } from 'react-native';
+import { TouchableOpacity, StyleSheet, Alert, Modal, View, Text, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
-import { ActivityIndicator } from 'react-native';
-
 
 export function VideoPicker() {
     const navigation = useNavigation();
@@ -12,103 +10,84 @@ export function VideoPicker() {
     const [isUploading, setIsUploading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isModalVisible, setModalVisible] = useState(false);
-    
     const xhr = useRef(null);
 
     const abortUpload = () => {
-        console.log("Attempting to abort upload");
         if (xhr.current) {
-            console.log("XHR exists. Trying to abort...");
             xhr.current.abort();
-        } else {
-            console.log("XHR does not exist or is not initialized.");
         }
     };
 
     const openVideoLibrary = async () => {
-    setIsLoading(true); 
-
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permissionResult.granted) {
-        Alert.alert('Permission to access media library is required!');
-        setIsLoading(false);  // Setzen Sie es auf false, wenn die Berechtigung nicht erteilt wird
-        return;
-    }
-
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Videos
-    });
-    
-    setIsLoading(false);  // Setzen Sie es auf false, sobald die Auswahl abgeschlossen ist (unabhängig vom Ergebnis)
-
-    if (!pickerResult.canceled) {
-        const videoUri = pickerResult.uri;
-        uploadVid(videoUri);
-    }
-};
-
+        setIsLoading(true); 
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permissionResult.granted) {
+            Alert.alert('Permission to access media library is required!');
+            setIsLoading(false);
+            return;
+        }
+        const pickerResult = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Videos
+        });
+        setIsLoading(false);
+        if (!pickerResult.canceled) {
+            uploadVid(pickerResult.uri);
+        }
+    };
 
     const uploadVid = async (uri) => {
         setIsUploading(true);
-        
-        
-        let videoData = `data:video/mp4;base64,${await toBase64(uri)}`;
-        
-        let data = {
-            video: videoData
-        };
+        const CHUNK_SIZE = 10 * 1024 * 1024; // 10 MB
+        const fileBlob = await fetch(uri).then(r => r.blob());
+        const totalChunks = Math.ceil(fileBlob.size / CHUNK_SIZE);
+        const uniqueId = Math.random().toString(36).substr(2, 9); // Generate a unique ID for this upload
 
-        xhr.current = new XMLHttpRequest();
-        xhr.current.open('POST', 'https://www.sbdci.de/kpw/uploadvid.php', true);
-        xhr.current.setRequestHeader('Content-Type', 'application/json');
-        
-        xhr.current.upload.onprogress = (event) => {
-            if (event.lengthComputable) {
-                const percentComplete = Math.round((event.loaded / event.total) * 100);
-                setProgress(percentComplete);
-            }
-        };
+        for (let i = 0; i < totalChunks; i++) {
+            const startByte = i * CHUNK_SIZE;
+            const endByte = Math.min(fileBlob.size, startByte + CHUNK_SIZE);
+            const chunkBlob = fileBlob.slice(startByte, endByte);
+            const formData = new FormData();
+            formData.append('video', chunkBlob, `chunk_${i}.mp4`);
+            formData.append('index', i.toString());
+            formData.append('total', totalChunks.toString());
+            formData.append('uniqueId', uniqueId);
 
-        xhr.current.onload = () => {
-            setIsUploading(false);
-            if (xhr.current.status === 200) {
-                console.log(xhr.current.responseText);
-                setModalVisible(true); // Zeige das erfolgreiche Upload-Modal an
-            } else {
-                console.error("Fehler beim Hochladen des Videos");
-            }
-        };
-
-        xhr.current.onerror = () => {
-            console.error("Fehler beim Hochladen des Videos");
-            setIsUploading(false);
-        };
-
-        xhr.current.onabort = () => {
-            console.log("Upload was aborted");
-            setIsUploading(false);
-            setIsLoading(false);
-        };
-
-        xhr.current.send(JSON.stringify(data));
+            xhr.current = new XMLHttpRequest();
+            xhr.current.open('POST', 'https://www.sbdci.de/kpw/uploadvid.php', true);
+            xhr.current.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                    setProgress(percentComplete);
+                }
+            };
+            xhr.current.onload = () => {
+                setIsUploading(false);
+                if (xhr.current.status === 200) {
+                    console.log(xhr.current.responseText);
+                    setModalVisible(true);
+                } else {
+                    console.error("Upload error");
+                }
+            };
+            xhr.current.onerror = () => {
+                console.error("Upload error");
+                setIsUploading(false);
+            };
+            xhr.current.onabort = () => {
+                console.log("Upload aborted");
+                setIsUploading(false);
+                setIsLoading(false);
+            };
+            xhr.current.send(formData);
+        }
     };
 
-    const toBase64 = async (uri) => {
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
-    };
 
     return (
         <>
             <TouchableOpacity style={styles.iconButton} onPress={openVideoLibrary}>
                 <FontAwesome name="video-camera" size={32} />
+                <Text>Upload a Video</Text>
             </TouchableOpacity>
             {isLoading && (
             <View style={{...styles.centered, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)'}}>
@@ -164,7 +143,9 @@ export function VideoPicker() {
 
 const styles = StyleSheet.create({
     iconButton: {
-        padding: 10
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     cancelButton: {
         marginTop: 10,
