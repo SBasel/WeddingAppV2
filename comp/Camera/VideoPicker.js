@@ -54,38 +54,44 @@ export function VideoPicker({ setIsLoading }) {
             formData.append('uniqueId', uniqueId);
 
             await new Promise((resolve, reject) => {
-                xhr.current = new XMLHttpRequest();
-                xhr.current.open('POST', 'https://www.sbdci.de/kpw/uploadvid.php', true);
-                xhr.current.upload.onprogress = (event) => {
-                    if (event.lengthComputable) {
-                        const percentComplete = Math.round((event.loaded / event.total) * 100);
-                        setProgress(percentComplete);
-                    }
-                };
-                xhr.current.onload = () => {
-                    setIsUploading(false);
-                    if (xhr.current.status === 200) {
-                        console.log(xhr.current.responseText);
-                        resolve();
-                    } else {
-                        console.error("Upload error");
-                        reject();
-                    }
-                };
-                xhr.current.onerror = () => {
+            xhr.current = new XMLHttpRequest();
+            xhr.current.open('POST', 'https://www.sbdci.de/kpw/uploadvid.php', true);
+            xhr.current.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const singleChunkProgress = (event.loaded / event.total);
+                    const totalProgress = ((i + singleChunkProgress) / totalChunks) * 100;
+                    setProgress(Math.round(totalProgress));
+                }
+            };
+            xhr.current.onload = () => {
+                if (xhr.current.status === 200) {
+                    console.log(xhr.current.responseText);
+                    resolve();
+                } else {
                     console.error("Upload error");
                     setIsUploading(false);
                     reject();
-                };
-                xhr.current.onabort = () => {
-                    console.log("Upload aborted");
-                    setIsUploading(false);
-                    reject();
-                };
-                xhr.current.send(formData);
-            });
+                }
+            };
+            xhr.current.onerror = () => {
+                console.error("Upload error");
+                setIsUploading(false);
+                reject();
+            };
+            xhr.current.onabort = () => {
+                console.log("Upload aborted");
+                setIsUploading(false);
+                reject();
+            };
+            xhr.current.send(formData);
+        });
+
+        if (i === totalChunks - 1) { 
+            setIsUploading(false);
+            setModalVisible(true);
         }
-    };
+            };
+        }
 
     VideoPicker.propTypes = {
     setIsLoading: PropTypes.func.isRequired
