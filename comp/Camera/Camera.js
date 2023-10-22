@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Alert, Text } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Alert, Text, ActivityIndicator  } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +8,7 @@ import { VideoPicker } from './VideoPicker';
 
 export function Camera() {
     const navigation = useNavigation();
+    const [isLoading, setIsLoading] = useState(false);
 
     const openCamera = async () => {
         const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
@@ -50,11 +51,16 @@ export function Camera() {
 
     return (
         <View style={styles.cameraContainer}>
+            {isLoading && (
+            <View style={{...styles.centered, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)'}}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+            )}
             <View style={styles.buttonsContainer}>
                 
                 <TouchableOpacity style={styles.iconButton} onPress={openCamera}>
                     <FontAwesome name="camera" size={32} />
-                    <Text>Take a Picture</Text>
+                    <Text>Make a Picture</Text>
                 </TouchableOpacity>
                 </View>
                 <View style={styles.buttonsContainer}>
@@ -64,7 +70,7 @@ export function Camera() {
                 </TouchableOpacity>
                 </View>
                 <View style={styles.buttonsContainer}>
-                 <VideoPicker/>
+                <VideoPicker setIsLoading={setIsLoading}/>
             </View>
         </View>
     );
@@ -84,6 +90,11 @@ const styles = StyleSheet.create({
     },
     iconButton: {
         padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    centered: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
     }

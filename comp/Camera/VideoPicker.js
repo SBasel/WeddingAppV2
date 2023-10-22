@@ -1,14 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { TouchableOpacity, StyleSheet, Alert, Modal, View, Text, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, StyleSheet, Alert, Modal, View, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 
-export function VideoPicker() {
+export function VideoPicker({ setIsLoading }) {
     const navigation = useNavigation();
     const [progress, setProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    
     const [isModalVisible, setModalVisible] = useState(false);
     const xhr = useRef(null);
 
@@ -40,47 +41,55 @@ export function VideoPicker() {
         const CHUNK_SIZE = 10 * 1024 * 1024; // 10 MB
         const fileBlob = await fetch(uri).then(r => r.blob());
         const totalChunks = Math.ceil(fileBlob.size / CHUNK_SIZE);
-        const uniqueId = Math.random().toString(36).substr(2, 9); // Generate a unique ID for this upload
+        const uniqueId = Math.random().toString(36).slice(2, 11); // Generate a unique ID for this upload
 
         for (let i = 0; i < totalChunks; i++) {
             const startByte = i * CHUNK_SIZE;
             const endByte = Math.min(fileBlob.size, startByte + CHUNK_SIZE);
             const chunkBlob = fileBlob.slice(startByte, endByte);
             const formData = new FormData();
-            formData.append('video', chunkBlob, `chunk_${i}.mp4`);
+            formData.append('video', chunkBlob, `${uniqueId}_chunk_${i}.mp4`);
             formData.append('index', i.toString());
             formData.append('total', totalChunks.toString());
             formData.append('uniqueId', uniqueId);
 
-            xhr.current = new XMLHttpRequest();
-            xhr.current.open('POST', 'https://www.sbdci.de/kpw/uploadvid.php', true);
-            xhr.current.upload.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const percentComplete = Math.round((event.loaded / event.total) * 100);
-                    setProgress(percentComplete);
-                }
-            };
-            xhr.current.onload = () => {
-                setIsUploading(false);
-                if (xhr.current.status === 200) {
-                    console.log(xhr.current.responseText);
-                    setModalVisible(true);
-                } else {
+            await new Promise((resolve, reject) => {
+                xhr.current = new XMLHttpRequest();
+                xhr.current.open('POST', 'https://www.sbdci.de/kpw/uploadvid.php', true);
+                xhr.current.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = Math.round((event.loaded / event.total) * 100);
+                        setProgress(percentComplete);
+                    }
+                };
+                xhr.current.onload = () => {
+                    setIsUploading(false);
+                    if (xhr.current.status === 200) {
+                        console.log(xhr.current.responseText);
+                        resolve();
+                    } else {
+                        console.error("Upload error");
+                        reject();
+                    }
+                };
+                xhr.current.onerror = () => {
                     console.error("Upload error");
-                }
-            };
-            xhr.current.onerror = () => {
-                console.error("Upload error");
-                setIsUploading(false);
-            };
-            xhr.current.onabort = () => {
-                console.log("Upload aborted");
-                setIsUploading(false);
-                setIsLoading(false);
-            };
-            xhr.current.send(formData);
+                    setIsUploading(false);
+                    reject();
+                };
+                xhr.current.onabort = () => {
+                    console.log("Upload aborted");
+                    setIsUploading(false);
+                    reject();
+                };
+                xhr.current.send(formData);
+            });
         }
     };
+
+    VideoPicker.propTypes = {
+    setIsLoading: PropTypes.func.isRequired
+};
 
 
     return (
@@ -89,11 +98,7 @@ export function VideoPicker() {
                 <FontAwesome name="video-camera" size={32} />
                 <Text>Upload a Video</Text>
             </TouchableOpacity>
-            {isLoading && (
-            <View style={{...styles.centered, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)'}}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-            )}
+        
             {isUploading && (
                 <Modal
                     transparent={true}
@@ -153,16 +158,17 @@ const styles = StyleSheet.create({
         backgroundColor: 'red',
         borderRadius: 5
     },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
+    
     modalView: {
         width: 300,
         padding: 20,
         backgroundColor: 'white',
         borderRadius: 10,
+        alignItems: 'center'
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center'
     }
 });
