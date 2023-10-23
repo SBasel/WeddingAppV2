@@ -132,12 +132,14 @@ export function Gallery() {
         <View style={styles.modalContainer}>
             <FontAwesome name="times" size={24} color="black" style={styles.closeIcon} onPress={closeModal} />
             <ReactPlayer 
-                url={`https://www.sbdci.de/kpw/upload/${selectedMedia}`} 
-                style={styles.modalVideoContainer}
-                controls={true}
-                width="90%"
-                height="70%"
-            />
+    url={`https://www.sbdci.de/kpw/upload/${selectedMedia}`} 
+    style={styles.modalVideoContainer}
+    controls={true}
+    width="90%"
+    height="70%"
+    playing
+    preload="auto"
+/>
         </View>
     </Modal>
 )}
